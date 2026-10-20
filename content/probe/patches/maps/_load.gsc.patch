@@ -1,0 +1,9 @@
+Minimal loader/compiler probe. The context line belongs to the game owner.
+Executed after level.players has been initialized, including on single-player.
+An allocated capacity of 3 must still report players=1 in this offline smoke.
+@@@ replace
+	level notify( "level.players initialized" );
+@@@ with
+	maps\_mw2trio_probe::players_ready( level.players );
+	level notify( "level.players initialized" );
+@@@ end
