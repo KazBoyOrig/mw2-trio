@@ -1,0 +1,320 @@
+{
+  "status": "SOURCE_CONTENT_PARTIALLY_RUNTIME_TESTED",
+  "source_url": "https://github.com/stxlvn/mw2_coop",
+  "source_commit": "8fcb6bcf9980894a631906059558a4797f4c9752",
+  "intent": "Pinned two-player upstream content for x86 component development; no three-player port",
+  "upstream_scripts": 14,
+  "prepared_scripts": 15,
+  "patch_files": 26,
+  "aggregate_patch_blocks_checked": 343,
+  "c_python_byte_comparison": "26/26 PASS",
+  "files": [
+    {
+      "file": "LICENSE",
+      "bytes": 1289,
+      "sha256": "1c3bc3cfe58058df2e65ff9a9e2759ffc36e0ce6de1dc7d11a1e274da488c935",
+      "upstream_sha256": "1c3bc3cfe58058df2e65ff9a9e2759ffc36e0ce6de1dc7d11a1e274da488c935",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/_blizzard.gsc.patch",
+      "bytes": 778,
+      "sha256": "ac65721b4d1ee6afcd6247d28ecae1124bcabaefcb22ad215ebcd85b518e1dd6",
+      "upstream_sha256": "ac65721b4d1ee6afcd6247d28ecae1124bcabaefcb22ad215ebcd85b518e1dd6",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/_climb.gsc.patch",
+      "bytes": 15714,
+      "sha256": "bee0bc0739b50bc120ca61bbaaeb278fbbc7abf746f828592ec4d3aaf9a10fb6",
+      "upstream_sha256": "bee0bc0739b50bc120ca61bbaaeb278fbbc7abf746f828592ec4d3aaf9a10fb6",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/_climb_anim.gsc.patch",
+      "bytes": 1517,
+      "sha256": "3309ad90fc3d4da1ae7243c9bc48dc295798d155a2e028b0fe9caa38c85d592c",
+      "upstream_sha256": "3309ad90fc3d4da1ae7243c9bc48dc295798d155a2e028b0fe9caa38c85d592c",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/_coop.gsc.patch",
+      "bytes": 2087,
+      "sha256": "c5b372695fc6ed164caf7661ea6b3ac5bef18b398ea316ad7b7f023f92cb8bae",
+      "upstream_sha256": "c5b372695fc6ed164caf7661ea6b3ac5bef18b398ea316ad7b7f023f92cb8bae",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/_intelligence.gsc.patch",
+      "bytes": 666,
+      "sha256": "402315c918d01a7a35214177cc0e035339ce457d8caf5cb3e000f5955bfeae2b",
+      "upstream_sha256": "402315c918d01a7a35214177cc0e035339ce457d8caf5cb3e000f5955bfeae2b",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/_load.gsc.patch",
+      "bytes": 705,
+      "sha256": "ff93b6b3a02b6ff663eeb6a28eb3ac00369d9ae5c13fff8d55fbbef75c1f6d43",
+      "upstream_sha256": "c6590543e61c1899bb2986ffe7daf40afb8f2e86cf457a06022277f8aae0863f",
+      "kind": "upstream_prefix_preserved_plus_own_probe_block"
+    },
+    {
+      "file": "patches/maps/_minigun_viewmodel.gsc.patch",
+      "bytes": 1344,
+      "sha256": "9fd6c15dfece22c4f5b70ac9f56ef99db43e7eaee9b4e3ddbc8960135e8a15e2",
+      "upstream_sha256": "9fd6c15dfece22c4f5b70ac9f56ef99db43e7eaee9b4e3ddbc8960135e8a15e2",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/_utility.gsc.patch",
+      "bytes": 1901,
+      "sha256": "ae4abd1759663e6cb0cf0033d2bf96d393f5de9ecc1b4db25f98d669ffd34c3c",
+      "upstream_sha256": "ae4abd1759663e6cb0cf0033d2bf96d393f5de9ecc1b4db25f98d669ffd34c3c",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/af_chase_knife_fight.gsc.patch",
+      "bytes": 2544,
+      "sha256": "5a56f3509053afbb2b5f4caf812381fbc0caefa66868207f6149734b003b7670",
+      "upstream_sha256": "5a56f3509053afbb2b5f4caf812381fbc0caefa66868207f6149734b003b7670",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/af_chase_knife_fight_code.gsc.patch",
+      "bytes": 6813,
+      "sha256": "9065a4083ce9f03c8caed7266a37d62ad8fa334f1ae5ab421c8648e8c86b1e95",
+      "upstream_sha256": "9065a4083ce9f03c8caed7266a37d62ad8fa334f1ae5ab421c8648e8c86b1e95",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/airport.gsc.patch",
+      "bytes": 1665,
+      "sha256": "0c553d2a11b6859237e454aa8e5ad18cb58b0c5ab9d0deb4a79be652ec13bc48",
+      "upstream_sha256": "0c553d2a11b6859237e454aa8e5ad18cb58b0c5ab9d0deb4a79be652ec13bc48",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/airport_code.gsc.patch",
+      "bytes": 2054,
+      "sha256": "e94306281089cc58accd15a94a976259c847e2fd08423df0fca571bb557e454e",
+      "upstream_sha256": "e94306281089cc58accd15a94a976259c847e2fd08423df0fca571bb557e454e",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/cliffhanger.gsc.patch",
+      "bytes": 560,
+      "sha256": "51a8b49b592a4a7c9e58804302a0bfce3d33ec20dc6d886b2de3321549061586",
+      "upstream_sha256": "51a8b49b592a4a7c9e58804302a0bfce3d33ec20dc6d886b2de3321549061586",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/cliffhanger_snowmobile.gsc.patch",
+      "bytes": 1432,
+      "sha256": "848acbd4543755268d907f9f2b2d2888e2f807cc398974578160da6521a5ab59",
+      "upstream_sha256": "848acbd4543755268d907f9f2b2d2888e2f807cc398974578160da6521a5ab59",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/dc_crashsite.gsc.patch",
+      "bytes": 2468,
+      "sha256": "7f7fadb4058689adb71668101ff119b6d495c6d03a590863cea5baf6e4fea89a",
+      "upstream_sha256": "7f7fadb4058689adb71668101ff119b6d495c6d03a590863cea5baf6e4fea89a",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/dcemp.gsc.patch",
+      "bytes": 2494,
+      "sha256": "560490bcc51785232e962fe3904e40304107e293b7f694cf68b408259c7345b8",
+      "upstream_sha256": "560490bcc51785232e962fe3904e40304107e293b7f694cf68b408259c7345b8",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/dcemp_code.gsc.patch",
+      "bytes": 1030,
+      "sha256": "8b0cd0ac2fcb1d27b83bdd8c8a759d316ba7100d05e90d337669ff2a9d23aea1",
+      "upstream_sha256": "8b0cd0ac2fcb1d27b83bdd8c8a759d316ba7100d05e90d337669ff2a9d23aea1",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/ending.gsc.patch",
+      "bytes": 514,
+      "sha256": "55031087819abdb372f74ce5059579f43f6b86fe20e792288b52fb3644ed162b",
+      "upstream_sha256": "55031087819abdb372f74ce5059579f43f6b86fe20e792288b52fb3644ed162b",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/favela.gsc.patch",
+      "bytes": 2949,
+      "sha256": "ba14a4544a5e86fb72b47ac2eb6cd950e29558ec203980868bd2722256aee634",
+      "upstream_sha256": "ba14a4544a5e86fb72b47ac2eb6cd950e29558ec203980868bd2722256aee634",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/gulag.gsc.patch",
+      "bytes": 390,
+      "sha256": "f5e45e9225cb382b81f4bc13beb2d0568e25656ecad2fa511878715945e768eb",
+      "upstream_sha256": "f5e45e9225cb382b81f4bc13beb2d0568e25656ecad2fa511878715945e768eb",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/gulag_code.gsc.patch",
+      "bytes": 577,
+      "sha256": "70edfa7f27253b41fcd842f933493cf3e727e5fe20bf1048f04fb9890bcde68b",
+      "upstream_sha256": "70edfa7f27253b41fcd842f933493cf3e727e5fe20bf1048f04fb9890bcde68b",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/invasion.gsc.patch",
+      "bytes": 2045,
+      "sha256": "ba2610197bf14f8d347dbd9e93bd29d5ea8decb97a38399a1859acd15dbd615b",
+      "upstream_sha256": "ba2610197bf14f8d347dbd9e93bd29d5ea8decb97a38399a1859acd15dbd615b",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/oilrig.gsc.patch",
+      "bytes": 4527,
+      "sha256": "9457e9c94a5a9208abe2dfc4cdc51b16319d7e0cf54e1ff6b94c1c5592da3860",
+      "upstream_sha256": "9457e9c94a5a9208abe2dfc4cdc51b16319d7e0cf54e1ff6b94c1c5592da3860",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/roadkill.gsc.patch",
+      "bytes": 677,
+      "sha256": "72c0f9d94ed0b9999190b868aa937d52bf964d352dabaa37b8306e145d1daad8",
+      "upstream_sha256": "72c0f9d94ed0b9999190b868aa937d52bf964d352dabaa37b8306e145d1daad8",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/roadkill_code.gsc.patch",
+      "bytes": 4357,
+      "sha256": "789877a31ee40ac6577a2588364b27948f98128158ca112cd389102489ee893c",
+      "upstream_sha256": "789877a31ee40ac6577a2588364b27948f98128158ca112cd389102489ee893c",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "patches/maps/trainer.gsc.patch",
+      "bytes": 2382,
+      "sha256": "43e7b18f884c59a382f93e0996f334c37dd9d89d4ef4d0cee54ce6b782ed37bc",
+      "upstream_sha256": "43e7b18f884c59a382f93e0996f334c37dd9d89d4ef4d0cee54ce6b782ed37bc",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "PROVENANCE.txt",
+      "bytes": 1726,
+      "sha256": "936876b97f11a44bdfccd7a0035e9897c6d3dd9336aed3da4b1ef22bb6b1a670",
+      "kind": "own_provenance_updated_for_publication"
+    },
+    {
+      "file": "scripts/maps/_mw2coop.gsc",
+      "bytes": 24656,
+      "sha256": "fb49244f0db09be68883280112d2169a9e9f0910d284fa1019c7be0899e5a34e",
+      "upstream_sha256": "fb49244f0db09be68883280112d2169a9e9f0910d284fa1019c7be0899e5a34e",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_airport.gsc",
+      "bytes": 7014,
+      "sha256": "ef28d7fb4987877a22d4378ce43752e2bcde966c366847cb4c920fa431417779",
+      "upstream_sha256": "ef28d7fb4987877a22d4378ce43752e2bcde966c366847cb4c920fa431417779",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_cliffhanger.gsc",
+      "bytes": 3023,
+      "sha256": "5dfd5c2d6be92fe19e05f65851fe25ea6ecd387b8a1ad5e4822eaab1db231e3f",
+      "upstream_sha256": "5dfd5c2d6be92fe19e05f65851fe25ea6ecd387b8a1ad5e4822eaab1db231e3f",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_climb.gsc",
+      "bytes": 17920,
+      "sha256": "9e2b625009e07717f8d940291adf0e104d7bdb8a5b5fd2e47ead29425a95fb3f",
+      "upstream_sha256": "9e2b625009e07717f8d940291adf0e104d7bdb8a5b5fd2e47ead29425a95fb3f",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_climb_qa.gsc",
+      "bytes": 7710,
+      "sha256": "f5474f92c55dbf365255fddc263d54681de0e1c4cc3d17f107c9707b3ee7d009",
+      "upstream_sha256": "f5474f92c55dbf365255fddc263d54681de0e1c4cc3d17f107c9707b3ee7d009",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_crashsite.gsc",
+      "bytes": 3287,
+      "sha256": "a12e68e282188fdabd29b86c4f624e6288fe1b95f5d4f481e2fc7dd7854ba2c6",
+      "upstream_sha256": "a12e68e282188fdabd29b86c4f624e6288fe1b95f5d4f481e2fc7dd7854ba2c6",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_dcemp.gsc",
+      "bytes": 5174,
+      "sha256": "b845c449e0c9e183484dfe1756d858e3bc416b0c3826e001dac15f677d8aa84c",
+      "upstream_sha256": "b845c449e0c9e183484dfe1756d858e3bc416b0c3826e001dac15f677d8aa84c",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_ending.gsc",
+      "bytes": 1144,
+      "sha256": "f3650d0609e44b5ec940067d15d25de5d9ce0ef24ef4c696b58dedbc6919c415",
+      "upstream_sha256": "f3650d0609e44b5ec940067d15d25de5d9ce0ef24ef4c696b58dedbc6919c415",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_favela.gsc",
+      "bytes": 5470,
+      "sha256": "2ac84e1e37fa7320406f61eaa09073031a7d23be103a713befaec229c2f03e7f",
+      "upstream_sha256": "2ac84e1e37fa7320406f61eaa09073031a7d23be103a713befaec229c2f03e7f",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_gulag.gsc",
+      "bytes": 2642,
+      "sha256": "9c9ac8af4da8ec8609598738f85de3eb20c0817dbc1e3b460032bb0f6ac13d9a",
+      "upstream_sha256": "9c9ac8af4da8ec8609598738f85de3eb20c0817dbc1e3b460032bb0f6ac13d9a",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_knife.gsc",
+      "bytes": 14484,
+      "sha256": "60658f9588499a33b19195e04b56c59fc7b88afab7058c3537e9dbf6df2ad538",
+      "upstream_sha256": "60658f9588499a33b19195e04b56c59fc7b88afab7058c3537e9dbf6df2ad538",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_oilrig.gsc",
+      "bytes": 7598,
+      "sha256": "c9f292f07d13bbc4ec141f912e1f9d75759da889c5dc936d822933c3eb5766cb",
+      "upstream_sha256": "c9f292f07d13bbc4ec141f912e1f9d75759da889c5dc936d822933c3eb5766cb",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_qa.gsc",
+      "bytes": 35582,
+      "sha256": "5e0d88f85d9a5245228b8b7a418aa0fff19ba706f673aeaa35fc8e776318ebd1",
+      "upstream_sha256": "5e0d88f85d9a5245228b8b7a418aa0fff19ba706f673aeaa35fc8e776318ebd1",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2coop_roadkill.gsc",
+      "bytes": 7683,
+      "sha256": "4c3355b19845571306d4158c63bab9edd7a16743b013a6b9ba2e8d55bbd67dc3",
+      "upstream_sha256": "4c3355b19845571306d4158c63bab9edd7a16743b013a6b9ba2e8d55bbd67dc3",
+      "kind": "identical_upstream"
+    },
+    {
+      "file": "scripts/maps/_mw2trio_probe.gsc",
+      "bytes": 261,
+      "sha256": "366811d08582d46844c5580bd20447ad536dd3690f66be865c62cc83a99e71a9",
+      "kind": "own_probe_or_provenance"
+    }
+  ],
+  "runtime_coverage": {
+    "mode": "single-player trainer, coop0, one actual player",
+    "own_sources_requested": 4,
+    "patch_files_requested": 5,
+    "applied_blocks": 19,
+    "all_missions_compiled": false,
+    "three_client_test": false
+  }
+}
