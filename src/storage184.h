@@ -2,8 +2,8 @@
 #include <windows.h>
 #include <stdint.h>
 
-/* Dormant, offline storage experiment; no scheduler, hook, or automatic entry.
- * Compile separately until reviewed. No network/player-connection support.
+/* Opt-in pre-engine storage experiment, enabled by startup integration.
+ * Three allocated records do not establish network/player connections.
  * The caller must pin the containing DLL for the process lifetime if installed.
  */
 #define STORAGE184_API_VERSION 1u

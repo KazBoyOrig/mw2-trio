@@ -1,4 +1,4 @@
-/* Own code; MIT. Dormant exact-build cache-only experiment.
+/* Own code; MIT. Opt-in pre-engine exact-build cache-only experiment.
    No index-limit/roster/wire/UI/auth patch. Only 31 classified operands and one
    constructor CALL operand may change. See private cache-three184.json audit. */
 #define WIN32_LEAN_AND_MEAN

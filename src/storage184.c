@@ -1,4 +1,4 @@
-/* Own code; MIT, see LICENSE. Dormant offline build184 storage experiment.
+/* Own code; MIT, see LICENSE. Opt-in pre-engine build184 storage experiment.
  * The only writable game targets are four-byte operands in the 20-site manifest.
  * Explicit startup integration installs only within verified pre-engine callbacks.
  */

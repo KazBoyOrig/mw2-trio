@@ -9,6 +9,7 @@
 #include "storage184.h"
 #include "scripts184.h"
 #include "cache184.h"
+#include "runtime184.h"
 #include "loader_safe.h"
 
 #define CRT_CALL 0x00677941u
@@ -26,7 +27,7 @@ typedef struct startup_state184 {
     volatile LONG entries, original_returned;
 } startup_state184;
 static startup_state184 startup;
-static wchar_t enable_path[MAX_PATH], scripts_enable_path[MAX_PATH], cache_enable_path[MAX_PATH], control_enable_path[MAX_PATH], log_path[MAX_PATH];
+static wchar_t enable_path[MAX_PATH], scripts_enable_path[MAX_PATH], cache_enable_path[MAX_PATH], runtime_enable_path[MAX_PATH], control_enable_path[MAX_PATH], log_path[MAX_PATH];
 
 static int image_read(uintptr_t address, void *out, SIZE_T bytes)
 {
@@ -196,6 +197,26 @@ static __declspec(noinline) int WINAPI startup_wrapper(HINSTANCE instance, HINST
             record("fatal-before-WinMain", "unrestored-script-loader-or-barrier", script_report.win32_error, NULL);
             ExitProcess(0xe1840030u);
         }
+        runtime184_options runtime_options;
+        runtime184_report runtime_report;
+        loader_zero(&runtime_options, sizeof(runtime_options));
+        runtime_options.version = RUNTIME184_API_VERSION;
+        runtime_options.bytes = sizeof(runtime_options);
+        runtime_options.module = startup.module;
+        runtime_options.main_thread_id = startup.initial_tid;
+        runtime_options.diagnostic_tick = 1;
+        runtime_options.enter_quiescence = enter_pre_winmain;
+        runtime_options.leave_quiescence = leave_pre_winmain;
+        runtime_options.quiescence_context = &startup;
+        startup.wrapper_scope = 1;
+        int runtime_result = runtime184_install_preengine(&runtime_options, &runtime_report);
+        startup.wrapper_scope = 0;
+        record("runtime-finished", runtime_result == RUNTIME184_OK ? "installed-coop-script-support" :
+            runtime_result == RUNTIME184_DISABLED ? "disabled" : "refused-or-failed", runtime_report.win32_error, NULL);
+        if (runtime_result < 0 || startup.barrier_held) {
+            record("fatal-before-WinMain", "runtime-contract-failed", runtime_report.win32_error, NULL);
+            ExitProcess(0xe1840060u);
+        }
     } else record("wrapper-refused", "startup-contract-not-satisfied-passthrough", 0, NULL);
     startup.before_original = 0;
     /* First engine entry happens only after storage has left its barrier. */
@@ -215,9 +236,11 @@ int startup184_attach(HMODULE module, LPVOID reserved, DWORD initial_thread_id)
     lstrcpyW(enable_path, directory); lstrcatW(enable_path, L"mw2-trio-storage-test.enable");
     lstrcpyW(scripts_enable_path, directory); lstrcatW(scripts_enable_path, L"mw2-trio-scripts-test.enable");
     lstrcpyW(cache_enable_path, directory); lstrcatW(cache_enable_path, L"mw2-trio-cache-test.enable");
+    lstrcpyW(runtime_enable_path, directory); lstrcatW(runtime_enable_path, L"mw2-trio-two-player-test.enable");
     lstrcpyW(control_enable_path, directory); lstrcatW(control_enable_path, L"mw2-trio-control.enable");
     lstrcpyW(log_path, directory); lstrcatW(log_path, L"startup184.log");
-    if (!ordinary_file(enable_path) && !ordinary_file(scripts_enable_path) && !ordinary_file(cache_enable_path)) return 0;
+    if (!ordinary_file(enable_path) && !ordinary_file(scripts_enable_path) && !ordinary_file(cache_enable_path)
+        && !ordinary_file(runtime_enable_path)) return 0;
     startup.module = module; startup.initial_tid = initial_thread_id;
     startup.static_attach = reserved != NULL;
     if (!startup.static_attach) { record("attach-refused", "dynamic-load", 0, NULL); return 0; }

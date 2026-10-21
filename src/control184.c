@@ -1,6 +1,6 @@
 /* Opt-in build184 control/telemetry. Own code; MIT, see LICENSE.
- * Only native patch: WinMain CALL 0x4B1CFA -> wrapper -> original 0x47A6F0.
- * There are no player-capacity, authentication, network or script patches here.
+ * Main-thread callback: WinMain CALL 0x4B1CFA -> original 0x47A6F0 -> telemetry.
+ * Explicit components retain their own opt-in and exact-image guards.
  */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -13,6 +13,10 @@
 #include "storage184.h"
 #include "scripts184.h"
 #include "cache184.h"
+#include "net184.h"
+#include "runtime184.h"
+#include "party184.h"
+#include "peer_transport184.h"
 
 #define EXPECTED_IMAGE_BASE ((uintptr_t)0x00400000u)
 #define FRAME_CALL_VA ((uintptr_t)0x004b1cfau)
@@ -31,7 +35,10 @@ typedef struct dvar_prefix184 {
 } dvar_prefix184;
 _Static_assert(sizeof(dvar_prefix184) == 0x20, "x86 dvar prefix layout");
 
-static wchar_t enable_path[MAX_PATH], mailbox_path[MAX_PATH], log_path[MAX_PATH];
+static wchar_t enable_path[MAX_PATH], mailbox_path[MAX_PATH], log_path[MAX_PATH], input_path[MAX_PATH];
+static int dense_input_this_frame, dense_input_started;
+static DWORD dense_input_begin;
+static uint32_t dense_input_frames;
 static DWORD initial_tid;
 static frame_fn volatile original_frame;
 static volatile LONG active, wrong_thread_noted;
@@ -89,6 +96,13 @@ static int read_span(uintptr_t address, void *destination, SIZE_T bytes)
 
 static int read32(uintptr_t address, uint32_t *value) { return read_span(address, value, sizeof(*value)); }
 
+static uint32_t diagnostic_hash(const uint8_t *data, size_t bytes)
+{
+    uint32_t h = 2166136261u;
+    for (size_t i = 0; i < bytes; ++i) h = (h ^ data[i]) * 16777619u;
+    return h;
+}
+
 static void printable_string(uintptr_t address, char *out, size_t capacity)
 {
     size_t i;
@@ -115,13 +129,44 @@ static void dvar_text(const char *name, char *out, size_t capacity)
     else snprintf(out, capacity, "<type%u>", (unsigned)dvar.type);
 }
 
+static void input_telemetry(void)
+{
+    uint32_t client_base=0,capacity=0,entity_client[2]={0};
+    if(!read32(0x010a3c10u,&client_base)||!read32(0x010a3c3cu,&capacity))return;
+    for(unsigned i=0;i<2;++i)read32(0x00ea76b8u+0x270u*i+0x108u,&entity_client[i]);
+    if (client_base == 0x0108dc68u && capacity == 2) {
+        uint32_t level_time = 0; read32(0x010a3c44u, &level_time);
+        for (unsigned i = 0; i < 2; ++i) {
+            uint8_t server_cmd[64], applied_cmd[64]; float position[3];
+            uintptr_t client = client_base + i * 0xafd4u;
+            if (entity_client[i] != client || !read_span(client + 0x1cu, position, sizeof(position))
+                || !read_span(0x01b24fb8u + i * 0x1674u, server_cmd, sizeof(server_cmd))
+                || !read_span(client + 0xaca8u, applied_cmd, sizeof(applied_cmd))) continue;
+            uint32_t server_time, applied_time;
+            memcpy(&server_time, server_cmd, 4); memcpy(&applied_time, applied_cmd, 4);
+            /* Diagnostic fingerprints include opaque bytes. Equality/inequality
+               alone is not an input-ownership or synchronization test. */
+            record("input slot=%u level_time=%lu server_cmd_time=%lu applied_cmd_time=%lu "
+                   "server_cmd_hash=%08lx applied_cmd_hash=%08lx server_axes=%d,%d applied_axes=%d,%d origin=%.3f,%.3f,%.3f",
+                   i, (unsigned long)level_time, (unsigned long)server_time, (unsigned long)applied_time,
+                   (unsigned long)diagnostic_hash(server_cmd, sizeof(server_cmd)),
+                   (unsigned long)diagnostic_hash(applied_cmd, sizeof(applied_cmd)),
+                   (int)(int8_t)server_cmd[0x1a],(int)(int8_t)server_cmd[0x1b],
+                   (int)(int8_t)applied_cmd[0x1a],(int)(int8_t)applied_cmd[0x1b],
+                   position[0], position[1], position[2]);
+        }
+    }
+}
+
 static void telemetry(void)
 {
-    char map[96], running[32], coop[32], specialops[32];
+    char map[96], running[32], coop[32], specialops[32], paused[32], game_mode[32];
     dvar_text("mapname", map, sizeof(map));
     dvar_text("sv_running", running, sizeof(running));
     dvar_text("coop", coop, sizeof(coop));
     dvar_text("specialops", specialops, sizeof(specialops));
+    dvar_text("cl_paused", paused, sizeof(paused));
+    dvar_text("gameMode", game_mode, sizeof(game_mode));
     uint32_t capacity = 0, client_base = 0, local_participants = 0;
     uint32_t entity_client[2] = {0}, native_index[2] = {0};
     uint8_t coop_enabled = 0;
@@ -145,11 +190,77 @@ static void telemetry(void)
     record("frame=%llu enqueued_mailboxes=%llu map=%s sv_running=%s coop=%s specialops=%s "
            "raw_valid=0x%x raw_level_maxclients=%lu raw_gclient_base=0x%08lx "
            "raw_local_participants=%lu raw_coop_enabled=%u raw_entity0_client=0x%08lx "
-           "raw_entity1_client=0x%08lx raw_client0_index=%ld raw_client1_index=%ld",
+           "raw_entity1_client=0x%08lx raw_client0_index=%ld raw_client1_index=%ld cl_paused=%s game_mode=%s",
            frame_count, enqueue_count, map, running, coop, specialops, valid,
            (unsigned long)capacity, (unsigned long)client_base, (unsigned long)local_participants,
            (unsigned)coop_enabled, (unsigned long)entity_client[0], (unsigned long)entity_client[1],
-           (long)(int32_t)native_index[0], (long)(int32_t)native_index[1]);
+           (long)(int32_t)native_index[0], (long)(int32_t)native_index[1], paused, game_mode);
+    /* Read-only party evidence, independent of the reserved storage experiment.
+       Native session records remain at two; an occupied byte is admission
+       evidence only, not a gameplay/synchronization verdict. */
+    uint8_t host = 0, party_active = 0, launch = 0, occupied[2] = {0};
+    uint8_t session_active = 0, native_online = 0, pending_accept_ack=0, connect_pending=0;
+    uint32_t launch_blocked=0;
+    uint32_t session = 0, channel_type[2] = {0}, count = 0, client_state = 0;
+    read_span(0x00934448u, &host, 1);
+    read_span(0x00934449u, &party_active, 1);
+    read_span(0x0093444bu, &launch, 1);
+    read32(0x00934450u, &session);
+    if (session == 0x01bde8b8u) {
+        read_span(session + 8, &session_active, 1);
+        for (unsigned i = 0; i < 2; ++i)
+            read_span(session + 0x68u + i * 0x38u, &occupied[i], 1);
+    }
+    for (unsigned i = 0; i < 2; ++i)
+        read32(0x0088f560u + i * 0x263cu, &channel_type[i]);
+    read32(0x01a7f0f8u, &count);
+    read32(0x00925bc0u, &client_state);
+    read_span(0x019fbfe4u, &native_online, 1);
+    read_span(0x01a7f0dbu,&pending_accept_ack,1);read_span(0x01a6b0c1u,&connect_pending,1);
+    read32(0x00934318u,&launch_blocked);
+    uint8_t identity[8] = {0};
+    read_span(0x019fbf88u, identity, sizeof(identity));
+    uint32_t identity_words[2]; memcpy(identity_words, identity, sizeof(identity));
+    char port[32], coop_map[96], solo[32], ui_online[32];
+    dvar_text("net_port", port, sizeof(port));
+    dvar_text("coop_mapName", coop_map, sizeof(coop_map));
+    dvar_text("solo_play", solo, sizeof(solo));
+    dvar_text("onlinegame", ui_online, sizeof(ui_online));
+    record("party host=%u active=%u launch=%u session=0x%08lx session_active=%u "
+           "member0=%u member1=%u channel0_type=%lu channel1_type=%lu "
+           "raw_launch_count=%lu client_state=%lu native_online=%u identity_present=%u identity_hash=%08lx "
+           "net_port=%s coop_map=%s solo_play=%s onlinegame=%s pending_accept_ack=%u connect_pending=%u launch_blocked=%ld",
+           host, party_active, launch, (unsigned long)session, session_active,
+           occupied[0], occupied[1], (unsigned long)channel_type[0], (unsigned long)channel_type[1],
+           (unsigned long)count, (unsigned long)client_state, native_online,
+           (identity_words[0] | identity_words[1]) != 0, (unsigned long)diagnostic_hash(identity, sizeof(identity)),
+           port, coop_map, solo, ui_online,pending_accept_ack,connect_pending,(long)(int32_t)launch_blocked);
+    if(session==0x01bde8b8u){
+        for(unsigned i=0;i<2;++i){
+            uint32_t member_uid[2]={0},address_type=0;uint16_t wire_port=0;
+            uintptr_t member=session+0x68u+i*0x38u;
+            if(!occupied[i]||!read_span(member+8,member_uid,8)
+                ||!read32(member+0x14u,&address_type)||!read_span(member+0x1cu,&wire_port,2))continue;
+            unsigned normal_port=((wire_port&255u)<<8)|(wire_port>>8);
+            record("roster slot=%u occupied=1 local_uid_match=%u address_type=%lu port=%u",
+                i,member_uid[0]==identity_words[0]&&member_uid[1]==identity_words[1],
+                (unsigned long)address_type,normal_port);
+        }
+    }
+    uint32_t socket4=0,socket_ipx=0,proxy=0,queue[4][3]={{0}};
+    read32(0x01a00b50u,&socket4);read32(0x019ff964u,&socket_ipx);read32(0x01a00b60u,&proxy);
+    for(unsigned i=0;i<4;++i){
+        read32(0x019f6228u+i*0x780u+0x14u,&queue[i][0]);
+        read32(0x019f6228u+i*0x780u+0x18u,&queue[i][1]);
+        read32(0x019f6228u+i*0x780u+0x20u,&queue[i][2]);
+    }
+    record("transport socket4=%lu socket_ipx=%lu proxy=%lu q0=%lu,%lu,%lu q1=%lu,%lu,%lu "
+           "q2=%lu,%lu,%lu q3=%lu,%lu,%lu",(unsigned long)socket4,(unsigned long)socket_ipx,(unsigned long)proxy,
+           (unsigned long)queue[0][0],(unsigned long)queue[0][1],(unsigned long)queue[0][2],
+           (unsigned long)queue[1][0],(unsigned long)queue[1][1],(unsigned long)queue[1][2],
+           (unsigned long)queue[2][0],(unsigned long)queue[2][1],(unsigned long)queue[2][2],
+           (unsigned long)queue[3][0],(unsigned long)queue[3][1],(unsigned long)queue[3][2]);
+    if(!dense_input_this_frame)input_telemetry();
 }
 
 static __declspec(noinline) void poll_mailbox(void)
@@ -244,8 +355,38 @@ static __declspec(noinline) void control_tick(void)
         cache_record("cache-fatal", &cache);
         ExitProcess(0xe1840041u);
     }
+    runtime184_report runtime;
+    int runtime_observed = runtime184_tick(&runtime);
+    if (runtime_observed < 0) {
+        record("runtime-fatal result=%ld site=%lu", (long)runtime_observed, (unsigned long)runtime.failed_site);
+        ExitProcess(0xe1840061u);
+    }
+    if (net184_tick() < 0) {
+        peer_transport184_report peer;
+        peer_transport184_get_report(&peer);
+        record("peer transport fatal result=%ld attempted=%lu ready=%lu failed=%lu error=%lu",
+            (long)peer.result,(unsigned long)peer.attempted,(unsigned long)peer.ready,
+            (unsigned long)peer.failed,(unsigned long)peer.win32_error);
+        record("network fatal: import rollback uncertain or QA boundary lost");
+        ExitProcess(0xe1840050u);
+    }
+    if (party184_tick(initial_tid) < 0) {
+        record("party-fatal: native contract or command ownership differs");
+        ExitProcess(0xe1840070u);
+    }
     ++frame_count;
     DWORD now = GetTickCount();
+    dense_input_this_frame=0;
+    DWORD input_attributes=GetFileAttributesW(input_path);
+    uint32_t input_state=0;
+    if(ordinary_enable_file()&&input_attributes!=INVALID_FILE_ATTRIBUTES
+        &&!(input_attributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))
+        &&read32(0x00925bc0u,&input_state)&&input_state==6){
+        if(!dense_input_started){dense_input_started=1;dense_input_begin=now;}
+        if((DWORD)(now-dense_input_begin)<120000u&&dense_input_frames<6000u){
+            ++dense_input_frames;dense_input_this_frame=1;input_telemetry();
+        }
+    }
     if ((DWORD)(now - last_poll) < 100) return;
     last_poll = now;
     if (!ordinary_enable_file()) {
@@ -257,6 +398,27 @@ static __declspec(noinline) void control_tick(void)
     poll_mailbox();
     if ((DWORD)(now - last_telemetry) >= 1000) {
         last_telemetry = now; telemetry();
+        net184_report net;net184_observe(&net);
+        if(net.installed)record("network installed=1 send_calls=%lu send_oob=%lu send_errors=%lu "
+            "recv_calls=%lu received_packets=%lu received_oob=%lu last_send_error=%lu last_recv_error=%lu qa_refused_external_ip=%lu qa_refused_backend=%lu",
+            (unsigned long)net.send_calls,(unsigned long)net.send_oob,(unsigned long)net.send_errors,
+            (unsigned long)net.recv_calls,(unsigned long)net.received_packets,(unsigned long)net.received_oob,
+            (unsigned long)net.last_send_error,(unsigned long)net.last_recv_error,
+            (unsigned long)net.qa_refused_external_ip,(unsigned long)net.qa_refused_backend);
+        party184_report party;
+        if (party184_get_report(&party, sizeof(party)) && party.registered)
+            record("party_commands registered=1 result=%lu checks=%lu host_attempts=%lu join_attempts=%lu "
+                   "launch_attempts=%lu rejected=%lu", (unsigned long)party.last_result,
+                   (unsigned long)party.guard_checks, (unsigned long)party.host_attempts,
+                   (unsigned long)party.join_attempts, (unsigned long)party.launch_attempts,
+                   (unsigned long)party.rejected);
+        if (runtime.installed) record("runtime installed=1 sites=%lu protections_restored=%lu flags_changed=%lu "
+            "found_mask=0x%lx readable_mask=0x%lx script_sets=%lu localized_hits=%lu script_errors=%lu drops=%lu",
+            (unsigned long)runtime.checked_sites, (unsigned long)runtime.protections_restored,
+            (unsigned long)runtime.flags_changed, (unsigned long)runtime.external_found_mask,
+            (unsigned long)runtime.external_readable_mask, (unsigned long)runtime.script_sets,
+            (unsigned long)runtime.localized_hits, (unsigned long)runtime.script_error_entries,
+            (unsigned long)runtime.diagnostic_drops);
         scripts184_report script;
         scripts184_observe(&script);
         if (script.installed) {
@@ -379,6 +541,7 @@ void control184_schedule(HINSTANCE instance, DWORD initial_thread_id)
     lstrcpyW(enable_path, directory); lstrcatW(enable_path, L"mw2-trio-control.enable");
     lstrcpyW(mailbox_path, directory); lstrcatW(mailbox_path, L"control-command.txt");
     lstrcpyW(log_path, directory); lstrcatW(log_path, L"control184.log");
+    lstrcpyW(input_path, directory); lstrcatW(input_path, L"mw2-trio-input-test.enable");
     if (!ordinary_enable_file()) return;
     initial_tid = initial_thread_id;
     HMODULE reference = NULL;
