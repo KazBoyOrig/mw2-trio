@@ -2,9 +2,9 @@
 
 **Version 0.0.1-dev · pre-alpha · developer prototype**
 
-Experimental work toward a three-player campaign in **Call of Duty: Modern Warfare 2 (2009)** on separate PCs, targeting one exact x86 build184 executable.
+Experimental work toward a three-player campaign in **Call of Duty: Modern Warfare 2 (2009)** on separate PCs, targeting one exact x86 build184 executable. Development currently prioritizes working two-player sessions before expanding the player count.
 
-**Three-player campaign co-op is not implemented yet.** There is no working host/join flow, multiplayer installer, or playable release. The current milestone is guarded native storage and script-loading experiments verified in a single-player trainer session. A complete two-player port is not claimed either.
+**Three-player campaign co-op is not implemented yet.** Two independent game processes have joined a native UDP lobby, loaded campaign `trainer` at `pit`, and passed automated independent movement and matching-world checks. This was tested on **one PC**, through both loopback QA and an exact pair of endpoints on an existing nonloopback interface. Separate-PC play, shooting/interactions and campaign progression remain unverified. This is a developer prototype; a complete two-player campaign port is not claimed.
 
 **Special thanks to [cranebeaker](https://github.com/cranebeaker), creator of [coop-anything](https://github.com/cranebeaker/coop-anything).** Their excellent guides provided the research, isolation, reverse-engineering and automated-testing approach behind this project. This prototype also builds on MIT-licensed work from [stxlvn/mw2_coop](https://github.com/stxlvn/mw2_coop). See [credits and provenance](CREDITS.md).
 
@@ -18,10 +18,24 @@ Experimental work toward a three-player campaign in **Call of Duty: Modern Warfa
 | Member name/statistics cache | Three reserved records, 32 guarded sites and a verified reset; native traversal intentionally remains at two |
 | GSC source loader | Core upstream scripts and an own player-count probe load on the target x86 engine |
 | Roster/readiness candidate | Offline-only versioned snapshots, content-bound ACKs, stale/reconnect checks and fourth-member rejection |
+| Native two-player admission | Real Connect/Accept, heartbeat exchange, two occupied members and distinct local ownership; two independent copies on one PC |
+| Shared two-player map loading | Native UDP launch and advancing command application in stock `so_killspree_trainer` and campaign `trainer`; bounded same-PC tests |
+| Script runtime support | Exact-build dvar visibility/localization/error diagnostics; campaign trainer's `pit` start reached two script-visible players |
+| Independent native movement | Seven automated neutral, host-only, client-only and simultaneous phases passed in campaign trainer; matching positions across both worlds |
+| Exact-peer development transport | Explicit mirrored endpoint configuration, actual adapter/socket-bind checks and role-distinct cached IDs; same-PC integration passed |
+| Developer host/join launcher | Independent copy preparation, guarded readiness/launch and post-exit restoration passed end to end on one PC |
 
-The last combined game test ran trainer for **45 seconds** with **one active local player and co-op disabled**, then exited normally. The executable on disk was unchanged. Three allocated records are storage capacity, not three connected players.
+An earlier combined component test ran trainer for **45 seconds** with **one active local player and co-op disabled**, then exited normally. The executable on disk was unchanged. Three allocated records are storage capacity, not three connected players.
 
 That run requested four own GSC files and five patched scripts, applying 19 patch blocks. It did not load every mission module. The original broader text comparison covered 26 scripts and 343 blocks, including the probe; text applicability does not prove campaign behavior. See [testing evidence and limits](docs/TESTING.md).
+
+The latest campaign input test observed both processes for **100 seconds after readiness**. Both reached `trainer`/`pit`, `coop=1`, `specialops=0`, `game_mode=2`, two script-visible players and native world state 6. Deliberate native movement affected the assigned player while the other stayed still; simultaneous distinct inputs also passed. Positions matched at equal native game/command times, with zero measured error in the compared samples. All seven phases passed, all 30 input-plan mailboxes were acknowledged, and both processes exited normally with unchanged executables. See [sanitized exact-peer evidence](docs/evidence/native-input-exact-peer-2026-10-21.json) and [test requirements and limits](docs/TESTING.md).
+
+These runs retain the original two-player capacities. The fixed-loopback QA identity fixture and the separately guarded exact-peer identity flow are opt-in development paths. The latter has passed on one existing interface with two ports on **one machine**; this does not establish connectivity between friends' PCs. The three-record storage/cache experiments are separate and remain disabled for these two-player tests.
+
+The [two-player developer guide](docs/TWO-PLAYER.md) covers building, preparing independent game copies, explicit host/join configuration and recovery. The launcher defaults to a read-only plan and requires `--execute` for changes or game launch.
+
+Allow about **12.7 GB per independent game copy**; a two-copy test on one PC needs about **25.5 GB**, plus tools and logs. The mod archive is under 1 MB. See the guide's [copy preparation and disk-space notes](docs/TWO-PLAYER.md#prepare-independent-copies) before creating more copies.
 
 ## Who this is for
 
@@ -88,7 +102,15 @@ Optional: also verify an exact target executable as a read-only file:
 
 These commands compile and run only the repository's own helper programs. They do not launch, attach to or patch a game, and they send no network packets. The optional game argument is opened for hashing and PE inspection only. Receipts go under `build/tests/<run>/`.
 
-The publication-stage run passed 48 helper/build cases with the optional exact target file: export/identity checks, SHA-256 boundaries, parser/path tests, cache transaction/reset fault injection, unsupported-process tests and the offline policy's seven broken variants. These are component tests. **Cooperative gameplay QA remains none.**
+The current native development suite passed **72 helper/build cases**, extending the historical 48-case publication-stage suite. Coverage includes export/identity checks, parsers, transaction/protection checks, unsupported-process cases, exact-peer configuration/transport fixtures and the offline policy's seven broken variants. These are component tests; the recorded real-game movement tests are separate evidence.
+
+Run the public Python launcher and read-only QA reader fixtures separately:
+
+```powershell
+python -B -m unittest discover -s tests -p 'test_*.py'
+```
+
+The current Python suite passed **128 fixtures**. These use synthetic data and fake process handles. They do not launch a game or establish cross-PC compatibility.
 
 ## Optional single-player component experiment
 
@@ -140,16 +162,17 @@ Once the owned test game has exited, remove the four `.enable` files. To remove 
 
 ## Known limitations
 
-- Native channels, server records, fixed-count helpers, session membership and private wire framing still require coordinated expansion. Lobby count edits alone are unsafe.
+- Expansion beyond two requires coordinated changes to native channels, server records, fixed-count helpers, session membership and private wire framing. Lobby count edits alone are unsafe.
 - The native cache reserves three records while traversing two. The third slot is deliberately unavailable to the original member API.
 - The upstream framework still assumes pairs in revive, cameras, vehicles and mission resources. Merely replacing `2` with `3` would break unrelated NPC and engine logic.
-- Core script loading in single-player does not test co-op threads, all mission dependencies, checkpoint progression or full-campaign behavior.
+- The two-player campaign result covers the trainer's `pit` start, independent native movement and matching bounded position samples. Aim/fire/use, death/revive, checkpoints, other missions and full-campaign behavior remain unverified.
+- The exact-peer flow has only been exercised between processes on one PC. Cross-PC compatibility, NAT traversal, packet-loss recovery and cross-peer version/settings agreement remain open.
 - The offline roster model is not wired into the game. Its hashes check snapshot agreement; they are not authentication.
 - All runtime modifications are experimental and remain opt-in, with strict build/phase/thread/signature guards and process-lifetime storage.
 
 ## Contribute
 
-Start with [architecture](docs/ARCHITECTURE.md), [roadmap](docs/ROADMAP.md), [test requirements](docs/TESTING.md) and [contribution guidelines](CONTRIBUTING.md). Useful contributions include exact native reference audits, bounded state-machine tests, coherent private-session integration and reproducible three-client input tests.
+Start with [architecture](docs/ARCHITECTURE.md), [roadmap](docs/ROADMAP.md), [test requirements](docs/TESTING.md) and [contribution guidelines](CONTRIBUTING.md). The immediate targets are separate-PC automated tests, native aim/fire/use and reproducible two-player progression. Useful contributions also include exact native reference audits, bounded state-machine tests and the coordinated work needed for three-client sessions.
 
 Please report the version, executable hash, test scope and minimal reproduction. Keep game files, full extracted/decompiled sources, saves, credentials and personal filesystem paths out of issues and pull requests.
 
