@@ -1,14 +1,18 @@
 # Roadmap — 0.0.1-dev
 
-**The goal is a three-player MW2 (2009) campaign on separate PCs. The current version is a guarded development prototype; it is not ready for cooperative play. Cooperative gameplay QA: none.** This roadmap describes required work, not shipped features or a completion date.
+**The goal is a three-player MW2 (2009) campaign on separate PCs, with four players a possible later expansion. Development first establishes the original two-player session and gameplay path.** Native two-player trainer movement has passed automated checks on one PC. The current version is a guarded developer prototype. This roadmap describes required work, not shipped features or a completion date.
 
 The staged approach follows **[cranebeaker/coop-anything](https://github.com/cranebeaker/coop-anything)**: exact executable identity, isolated experiments, automated tests, and evidence before compatibility claims. The MIT campaign framework is credited to [stxlvn/mw2_coop](https://github.com/stxlvn/mw2_coop/tree/8fcb6bcf9980894a631906059558a4797f4c9752). Its native x64 support and upstream tests do not establish an x86 port or three-player support here.
 
 ## Current baseline
 
-The [architecture document](ARCHITECTURE.md) specifies the exact supported x86 build184 hash and the active opt-in modules. Single-player trainer experiments have exercised guarded control, three-record player storage, cache allocation/reset for three with traversal of two, and a GSC source loader. Actual script membership remained one and co-op remained disabled.
+The [architecture document](ARCHITECTURE.md) specifies the exact supported x86 build184 hash and active opt-in modules. Earlier single-player trainer experiments exercised guarded control, three-record player storage, cache allocation/reset for three with traversal of two, and a GSC source loader. Those component runs retained one script player with co-op disabled.
 
-The staged framework's trainer coverage is four own sources and five patched scripts with 19 applied blocks. This does not cover all mission modules or run the framework's co-op behavior. The standalone roster/ACK prototype has offline tests but no native adapter. A complete two-player port has not been demonstrated.
+That single-player framework receipt covers four own sources and five patched scripts with 19 applied blocks. It does not cover every mission module. The standalone roster/ACK prototype has offline tests but no native adapter.
+
+The newer two-copy path uses the original two-player capacities. Native UDP admission and shared-map advancement passed on stock `so_killspree_trainer` and campaign `trainer`. The campaign run reached the `pit` start with `coop=1`, `specialops=0`, `gameMode=2` and two script players. Over 100 seconds after readiness, both copies reached native world state 6 and advanced both slots' command application by about 19.9 seconds during the final 20-second window. Both exited normally and their executables were unchanged.
+
+Later runs passed **seven independent native movement phases** in campaign trainer through both fixed-loopback QA and exact-peer transport. The exact-peer run used two native ports on an existing nonloopback interface, with separately guarded role-distinct cached IDs. Solo inputs affected only their assigned actor, simultaneous distinct movement passed and compared equal-time world positions matched. Both copies exited normally. Every test was still on **one PC**. Separate-PC connectivity, aim/fire/use and progression remain open. Three-record capacity work is a separate future expansion baseline and stays disabled for these two-player tests.
 
 ## 1. Preserve the diagnostic baseline
 
@@ -18,7 +22,17 @@ Each new mutation needs an understood reference map, verified ABI, bounded alloc
 
 **Exit criterion:** the new stage preserves the existing single-player component checks, exits normally when healthy, and refuses or stops cleanly when its verified contract fails. Helper success alone does not satisfy a game runtime gate.
 
-## 2. Implement native member and connection lifecycle
+## 2. Establish two-player input and progression first
+
+Keep native capacity and wire framing at two while proving two independent producers in the shared stock map, then campaign trainer. Require fresh matching map/mode, native world state 6, an unpaused simulation, stable entity/channel ownership and advancing command times on both copies before dispatching actions.
+
+Use bounded game-time phases: neutral, host-only movement, neutral, client-only movement, neutral, distinct simultaneous movement, then neutral release. Observe actual server/applied command axes and positions in both worlds at matching game/command times. Keep neutral movement bounded across every captured sample. Mailbox acceptance, advancing timestamps, script movement and player-count probes alone do not establish independence. Every failure path must release inputs, and the overall result must include clean process teardown.
+
+The bounded native movement portion passed on one PC; preserve it as a regression. Next run the exact-peer flow on two separate PCs, then add native aim/fire/use checks, death/revive, checkpoint restart, reconnect, map transitions and mission triggers individually. Cross-machine scoring needs explicit event/time agreement; do not assume a shared Windows tick clock. The developer launcher currently requires manual readiness and does not negotiate matching versions, seed or settings. Document tested missions and failures before describing a supported host/join release.
+
+**Exit criterion:** deliberate native inputs affect only their assigned players on two PCs, both worlds agree on measured state, and repeatable two-player progression scenarios pass. Same-PC trainer movement satisfies one bounded part of this criterion.
+
+## 3. Implement three-member native lifecycle
 
 Build a common native member API that can represent three participants without expanding into the original session object's neighboring platform fields. Connect actual native identities and addresses to stable member slots and connection incarnations. Audit all readers, writers, lookup/count helpers, initialization, reset, removal, and reconnect paths.
 
@@ -34,7 +48,7 @@ Cache traversal stays at two until the new member API and every affected consume
 
 **Exit criterion:** deterministic lifecycle transcripts cover join order, duplicate join, stale ACK, changed roster, reconnect, removal, slot reuse, session restart, and fourth-peer rejection. Native tests must confirm that unrelated session/platform fields are preserved.
 
-## 3. Complete server and channel capacity together
+## 4. Complete server and channel capacity together
 
 Turn the passive **257-operand server/channel inventory** into a reviewed implementation plan. Reconcile all interior addresses, pointer-loop ends, clear sizes, and 337 deliberately preserved neighboring aliases. Do not activate the inventory as a blanket patch list.
 
@@ -44,7 +58,7 @@ Use guarded storage and initialize every internal pointer before any engine code
 
 **Exit criterion:** three distinct accepted native participants each have the correct server/channel/storage records and buffers. No third slot aliases an existing slot, overwrites neighboring state, or enters a legacy two-record accessor. This is still a capacity/admission result, not gameplay synchronization.
 
-## 4. Define a versioned private three-participant protocol
+## 5. Define a versioned private three-participant protocol
 
 The existing authoritative-frame command path has a one-bit participant selector. A candidate private format uses **two bits** for participant indices 0, 1, and 2, with the remaining value explicitly invalid or reserved. This is a design proposal; both ends of every affected message must agree before it can be used.
 
@@ -54,7 +68,7 @@ Require version agreement before admission/launch. Reject mixed or stock protoco
 
 **Exit criterion:** offline codec/transcript tests cover all three valid indices, the reserved value, truncation, malformed lengths/opcodes, stale epochs, mixed versions, reordering, duplication, timeout, reconnect, and fourth-peer attempts. Then exercise the same private protocol with real game processes.
 
-## 5. First gameplay gate: three independent inputs in trainer
+## 6. Expansion gameplay gate: three independent inputs in trainer
 
 Use one host and two real game clients with matching code/content and one local controller each. Begin with a bounded stationary/movement test, before mission progression, save/load, vehicles, or cinematics.
 
@@ -66,7 +80,7 @@ Use one host and two real game clients with matching code/content and one local 
 
 **Exit criterion:** each input stream affects its own player, all processes agree on participant identity and relevant frame state, and guards remain intact. A populated lobby or one process reporting three entities is insufficient. Passing this gate still does not establish campaign support.
 
-## 6. Generalize core GSC, revive, and checkpoints
+## 7. Generalize core GSC, revive, and checkpoints
 
 Replace pair assumptions with explicit roles: a story leader, a participant list, all nonleader followers, a selected rescuer, all passengers, or all scene witnesses. Do not replace a singular partner helper with an arbitrary first teammate. Give per-player state and resources stable identity/epoch keys.
 
@@ -78,9 +92,9 @@ Checkpoint and mission transitions need host-authoritative revisions, idempotent
 
 **Exit criterion:** test all eight downed subsets, all six directed rescuer-to-victim pairs, competing rescuers, two simultaneous victims, cancellation, bleed-out, disconnect, and terminal cleanup. Verify the agreed failure policy: two downed with one eligible living participant must not be mistaken for all downed. All three clients must restart/resume at the same committed checkpoint and map epoch.
 
-## 7. Validate mission resources and cinematics individually
+## 8. Validate mission resources and cinematics individually
 
-The staged upstream framework is still designed around two participants. Compile and exercise each mission module as it becomes reachable; the current trainer load covers only part of the staged content.
+The staged upstream framework is still designed around two participants. Compile and exercise each mission module as it becomes reachable; the current two-player trainer start covers only part of the staged content and has no progression result.
 
 | Mission system | Required three-participant work |
 |---|---|
@@ -98,10 +112,14 @@ Avoid global singleton caches that make both followers share one second lane, se
 
 **Exit criterion:** automated real-client scenarios exercise every participant in each eligible role, simultaneous interaction, cancellation/failure, safe resource release, and progression barriers. Report supported missions and start points individually; a trainer or one-mission pass is not a campaign pass.
 
-## 8. Establish release evidence and usable host/join flows
+## 9. Establish release evidence and usable host/join flows
 
 After the native and script gates pass, add reproducible three-client regression runs with packet delay/loss/reordering, reconnect, state/ownership comparisons, and mission transition coverage. Keep a clean single-player regression baseline.
 
 Only then implement and document a supported host/join workflow, compatible content/protocol checks, build requirements, clear failure messages, and tested mission coverage. Publish summaries that distinguish synthetic helpers, single-process experiments, multi-process simulation, and tests across separate PCs. Keep personal data, game assets, extracted sources, and raw private logs out of release material.
 
-**Release criterion:** claims match the real-client tests that ran. Until those results exist, 0.0.1-dev remains an engineering handoff with **cooperative gameplay QA: none**, no playable-three-player claim, and no claim of a complete two-player x86 port.
+**Release criterion:** claims match the real-client tests that ran. Version 0.0.1-dev currently has bounded same-PC trainer movement QA, no playable-three-player claim and no claim of a complete two-player x86 port.
+
+## 10. Consider four players after the three-player baseline
+
+Repeat the full capacity, lifecycle, protocol, script-resource and mission audits for four participants. Do not infer four-player support from a two-bit selector or a third allocated record. A fourth participant needs its own accepted member/channel/storage, input ownership, broadcast delivery, revive relationships, vehicle seats and cinematic handling. Preserve mixed-version rejection and test excess-player rejection at the new limit. This work starts only after repeatable three-PC gameplay and progression; it has not been implemented.
