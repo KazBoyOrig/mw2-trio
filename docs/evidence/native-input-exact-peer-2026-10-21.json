@@ -1,0 +1,238 @@
+{
+  "schema": "mw2-trio-public-native-input-evidence-v1",
+  "date_utc": "2026-10-21",
+  "version": "0.0.1-dev",
+  "dll_sha256": "0b9ae3e2da9bed02b80a5be30450e642d53a9f400d1d0ae73f34efb2bc3acb34",
+  "exe_sha256": "4dd53fabf9677980aaf081009584ade99d6bf440330046e5c8950e87ef0547d9",
+  "topology": "two independent isolated processes on one Windows PC; explicit exact-peer UDP mode using one owned non-loopback interface and distinct local ports",
+  "map": "trainer",
+  "start": "pit",
+  "coop": 1,
+  "specialops": 0,
+  "game_mode": 2,
+  "native_players": 2,
+  "duration_seconds_after_readiness": 100,
+  "pattern": "host-forward; client-right; simultaneously host-back/client-left",
+  "input_pattern_id": "both-return",
+  "input_method": "native-console-kbutton",
+  "result": true,
+  "shared_map_result": true,
+  "harness_clean": true,
+  "both_normal_exit_codes": {
+    "client": 0,
+    "host": 0
+  },
+  "exe_files_unchanged": true,
+  "all_owned_processes_stopped": true,
+  "forced_cleanup_count": 0,
+  "all_36_recorded_step_mailboxes_acknowledged": true,
+  "boot_mailboxes_acknowledged": 2,
+  "cleanup_quit_mailboxes_acknowledged": 2,
+  "all_releases_consumed": true,
+  "observation_boundary": "validated own same-PC runner_precleanup marker; exact boot, recorded-step and final own-quit acknowledgment sequences; excludes cleanup records at/after the common native tick",
+  "scorer_sources_sha256": {
+    "score_shared_map.py": "6cca9d3dd3f79d9bb511bcb5ff378616b1e78307774494e0b291a46c9b2c72f4",
+    "score_independent_inputs.py": "28c71147a4880d04ab665321c50e8b35a04fe99b5a82533f9254b7593ac6dca0"
+  },
+  "private_source_digest_only": {
+    "result.json": "06460514bc5f96e6601a65314e70d2d00c19a0de48c9206fd0465f8f889623a9",
+    "input-events.json": "9a69fca8f4d2a6de2ccd249e671efe18ba66e7a802a9316675e410a6d07dae2f",
+    "input-score.json": "713d9b99db895c7026f38de00ab52d2d9c9b11f87d7ffe4edc1383e719c88ed6"
+  },
+  "score_recomputed_with_public_reader": true,
+  "phases": [
+    {
+      "name": "neutral_before",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 30,
+          "captured_host_samples": 34,
+          "captured_client_samples": 45,
+          "motion_units": 0.0,
+          "max_step_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        },
+        "1": {
+          "exact_world_time_pairs": 30,
+          "captured_host_samples": 33,
+          "captured_client_samples": 44,
+          "motion_units": 0.0,
+          "max_step_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        }
+      }
+    },
+    {
+      "name": "host_forward",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 13,
+          "captured_host_samples": 17,
+          "captured_client_samples": 20,
+          "motion_units": 112.68799999999919,
+          "max_step_units": 20.007000000000517,
+          "max_excursion_units": 117.8179999999993,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        },
+        "1": {
+          "exact_world_time_pairs": 14,
+          "captured_host_samples": 17,
+          "captured_client_samples": 19,
+          "motion_units": 0.0,
+          "max_step_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        }
+      }
+    },
+    {
+      "name": "neutral_between1",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 8,
+          "captured_host_samples": 13,
+          "captured_client_samples": 18,
+          "motion_units": 0.0,
+          "max_step_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        },
+        "1": {
+          "exact_world_time_pairs": 10,
+          "captured_host_samples": 13,
+          "captured_client_samples": 18,
+          "motion_units": 0.0,
+          "max_step_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        }
+      }
+    },
+    {
+      "name": "client_right",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 12,
+          "captured_host_samples": 14,
+          "captured_client_samples": 20,
+          "motion_units": 0.0,
+          "max_step_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        },
+        "1": {
+          "exact_world_time_pairs": 11,
+          "captured_host_samples": 14,
+          "captured_client_samples": 19,
+          "motion_units": 69.76800000000003,
+          "max_step_units": 15.458000000000084,
+          "max_excursion_units": 81.02800000000025,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        }
+      }
+    },
+    {
+      "name": "neutral_between2",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 13,
+          "captured_host_samples": 14,
+          "captured_client_samples": 21,
+          "motion_units": 0.0,
+          "max_step_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        },
+        "1": {
+          "exact_world_time_pairs": 13,
+          "captured_host_samples": 14,
+          "captured_client_samples": 20,
+          "motion_units": 0.0,
+          "max_step_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        }
+      }
+    },
+    {
+      "name": "distinct_both",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 13,
+          "captured_host_samples": 15,
+          "captured_client_samples": 18,
+          "motion_units": 80.59799999999996,
+          "max_step_units": 19.683999999999287,
+          "max_excursion_units": 84.72099999999955,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        },
+        "1": {
+          "exact_world_time_pairs": 13,
+          "captured_host_samples": 15,
+          "captured_client_samples": 18,
+          "motion_units": 83.99499999999989,
+          "max_step_units": 20.519999999999982,
+          "max_excursion_units": 90.61200000000008,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        }
+      }
+    },
+    {
+      "name": "neutral_after",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 32,
+          "captured_host_samples": 40,
+          "captured_client_samples": 52,
+          "motion_units": 0.0,
+          "max_step_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        },
+        "1": {
+          "exact_world_time_pairs": 31,
+          "captured_host_samples": 39,
+          "captured_client_samples": 50,
+          "motion_units": 0.0,
+          "max_step_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0,
+          "all_owner_axis_checks_passed": true
+        }
+      }
+    }
+  ],
+  "limits": [
+    "bounded native movement and matching exact-time world positions only",
+    "one PC with two processes; no separate-PC connectivity or gameplay proof",
+    "no complete mouse/controller/shooting/interaction QA",
+    "no checkpoint, revive, mission-transition or complete-campaign proof",
+    "private role-derived changes target the native cached participant ID; profile, heartbeat and other cached-ID consumer side effects or persistence remain unvalidated; no provider/account authentication claim",
+    "no whole-process egress claim; the explicit UDP peer boundary does not establish coverage of all platform callbacks",
+    "three/four players remain unimplemented",
+    "earlier failed density, collision, bind and public-CLI receipts remain failed; they are not replaced by this scenario result"
+  ],
+  "private_material_included": false
+}
