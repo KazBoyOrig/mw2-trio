@@ -1,0 +1,132 @@
+{
+  "schema": "mw2-trio-public-launcher-evidence-v1",
+  "date_utc": "2026-10-21",
+  "version": "0.0.1-dev",
+  "topology": "two independent game copies and retained launcher processes on one Windows PC; one existing owned nonloopback interface and two native ports",
+  "map": "trainer",
+  "start": "pit",
+  "coop": 1,
+  "specialops": 0,
+  "game_mode": 2,
+  "native_players": 2,
+  "dll_sha256": "0b9ae3e2da9bed02b80a5be30450e642d53a9f400d1d0ae73f34efb2bc3acb34",
+  "exe_sha256": "4dd53fabf9677980aaf081009584ade99d6bf440330046e5c8950e87ef0547d9",
+  "public_launcher_source_sha256": "afd364e71995f22c1796fb4ac8b858740c1924100e483431677315e1cef47c3a",
+  "private_runner_source_sha256": "d03d9e196d17336b35877afda2d82519c2c0061a5c1e706bbd50fc18f5d4986a",
+  "private_result_sha256": "fe20de0668bbe21bcb91d56a3fb9a870f4c3dbf456e2a8c1007b6b3e25c664a0",
+  "pass": true,
+  "matching_ready_and_prompt_before_enter": true,
+  "sample_count": 23,
+  "native_clock_advancement": {
+    "host": {
+      "0": {
+        "samples": 23,
+        "pass": true,
+        "clocks": {
+          "level_time": {
+            "advance_ms": 10100,
+            "distinct": 12,
+            "pass": true
+          },
+          "server_cmd_time": {
+            "advance_ms": 10059,
+            "distinct": 12,
+            "pass": true
+          },
+          "applied_cmd_time": {
+            "advance_ms": 10059,
+            "distinct": 12,
+            "pass": true
+          }
+        }
+      },
+      "1": {
+        "samples": 23,
+        "pass": true,
+        "clocks": {
+          "level_time": {
+            "advance_ms": 10100,
+            "distinct": 12,
+            "pass": true
+          },
+          "server_cmd_time": {
+            "advance_ms": 10006,
+            "distinct": 10,
+            "pass": true
+          },
+          "applied_cmd_time": {
+            "advance_ms": 10006,
+            "distinct": 10,
+            "pass": true
+          }
+        }
+      }
+    },
+    "client": {
+      "0": {
+        "samples": 23,
+        "pass": true,
+        "clocks": {
+          "level_time": {
+            "advance_ms": 10750,
+            "distinct": 12,
+            "pass": true
+          },
+          "server_cmd_time": {
+            "advance_ms": 10692,
+            "distinct": 12,
+            "pass": true
+          },
+          "applied_cmd_time": {
+            "advance_ms": 10692,
+            "distinct": 12,
+            "pass": true
+          }
+        }
+      },
+      "1": {
+        "samples": 23,
+        "pass": true,
+        "clocks": {
+          "level_time": {
+            "advance_ms": 10750,
+            "distinct": 12,
+            "pass": true
+          },
+          "server_cmd_time": {
+            "advance_ms": 10574,
+            "distinct": 11,
+            "pass": true
+          },
+          "applied_cmd_time": {
+            "advance_ms": 10574,
+            "distinct": 11,
+            "pass": true
+          }
+        }
+      }
+    }
+  },
+  "elapsed_seconds": 42.437999999994645,
+  "both_cli_exit_codes": {
+    "host": 0,
+    "client": 0
+  },
+  "both_game_exit_codes": {
+    "host": 0,
+    "client": 0
+  },
+  "both_clean_file_restoration": true,
+  "both_executables_unchanged": true,
+  "all_owned_processes_stopped": true,
+  "forced_game_or_launcher_termination": false,
+  "lease_released": true,
+  "limits": [
+    "one PC only; no separate-PC or NAT/connectivity proof",
+    "public launcher lifecycle and shared native advancement only; independent movement is covered by separate evidence",
+    "no aim/fire/use, revive, checkpoints, rejoin, transitions or complete campaign proof",
+    "manual friend readiness is a launch step, not cross-peer version/seed/settings agreement",
+    "three/four participants unimplemented"
+  ],
+  "private_material_included": false
+}

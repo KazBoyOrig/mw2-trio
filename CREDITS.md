@@ -22,6 +22,8 @@ Maintained by [KazBoyOrig](https://github.com/KazBoyOrig) and contributors. This
 
 ## Game material and tools
 
-Call of Duty: Modern Warfare 2 and its game assets belong to their respective owners. No game executable, runtime dependency, full extracted game script or other game asset is distributed here. Patch files contain small game-owned excerpts solely to locate changes; those excerpts are outside the MIT license.
+Call of Duty: Modern Warfare 2 and its game assets belong to their respective owners. No game executable, game runtime dependency, full extracted game script or other game asset is distributed here. Patch files contain small game-owned excerpts solely to locate changes; those excerpts are outside the MIT license.
 
-LLVM-MinGW, Ghidra and the JDK were development tools. Their binaries are not bundled. No source implementation from the unlicensed legacy COD-MOD tree is redistributed.
+LLVM-MinGW, Ghidra and the JDK were development tools. Their tool binaries are not bundled. No source implementation from the unlicensed legacy COD-MOD tree is redistributed.
+
+Developer DLL bundles contain statically linked compiler/runtime support from the pinned [LLVM-MinGW 20261006 toolchain](https://github.com/mstorsjo/llvm-mingw/releases/tag/20261006). The toolchain's unchanged [MinGW-w64 runtime notices](third_party/mingw-w64-runtime-LICENSE) and [LLVM/toolchain license and exceptions](third_party/llvm-mingw-LICENSE) accompany those binaries. These third-party components retain their respective terms; the project's MIT license does not replace them. Keep these notices with redistributed developer bundles.

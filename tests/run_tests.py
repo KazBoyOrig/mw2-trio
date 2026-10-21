@@ -58,7 +58,9 @@ def main():
     # Helpers load the proxy only in their own unsupported process. Keep the
     # default load outside all opt-in folders, so it cannot schedule native work.
     for name in ('mw2-trio-control.enable', 'mw2-trio-storage-test.enable',
-                 'mw2-trio-cache-test.enable', 'mw2-trio-scripts-test.enable'):
+                 'mw2-trio-cache-test.enable', 'mw2-trio-scripts-test.enable',
+                 'mw2-trio-two-player-test.enable','mw2-trio-party-test.enable','mw2-trio-network-test.enable',
+                 'mw2-trio-loopback-qa.enable','mw2-trio-input-test.enable','mw2-trio-peer-test.enable'):
         if (dll.parent / name).exists():
             raise RuntimeError('Remove experimental opt-in flags from build/ before helper tests')
     fixture = out / 'synthetic-wrong-hash.bin'
@@ -80,6 +82,40 @@ def main():
             raise RuntimeError('SHA helper differs from Python hashlib')
     scripts = compile_helper('scripts184-helper', [ROOT / 'tests/scripts184-helper.c'], True)
     run([scripts], 'script-parser-paths', 35)
+    reliable = compile_helper('reliable184-helper', [ROOT / 'tests/reliable184-helper.c', ROOT / 'src/reliable184.c'])
+    reliable_text = run([reliable], 'reliable-first-token-and-rejection')
+    if '160204 checks passed; 40000 bounded guard-page mutations' not in reliable_text:
+        raise RuntimeError('Reliable decoder fixture coverage differs')
+    service = compile_helper('service184-helper', [ROOT / 'tests/service184-helper.c', ROOT / 'src/service184.c'])
+    service_text = run([service], 'blocked-external-ip-positive-classifier')
+    if '90076 checks passed; exhaustive39-byte field mutations;40000 guard-page inputs' not in service_text:
+        raise RuntimeError('Blocked service classifier fixture coverage differs')
+    backend = compile_helper('backend184-helper', [ROOT / 'tests/backend184-helper.c', ROOT / 'src/backend184.c'])
+    backend_text = run([backend], 'blocked-native-backend-context-classifier')
+    if 'pure context checks passed; no payload/game/network calls' not in backend_text:
+        raise RuntimeError('Native backend classifier fixture coverage differs')
+    net = compile_helper('net184-helper', [ROOT / 'tests/net184-helper.c', ROOT / 'src/reliable184.c', ROOT / 'src/service184.c', ROOT / 'src/backend184.c', ROOT / 'src/pure_sha256.c'], extra=['-lws2_32'])
+    run([net], 'socket-forwarding-and-private-boundaries-with-fake-callees', 23)
+    qa_identity = compile_helper('qa_identity184-helper', [ROOT / 'tests/qa_identity184-helper.c'])
+    run([qa_identity], 'private-identity-own-fixtures', 130)
+    peer_scope = compile_helper('peer_scope184-helper', [ROOT / 'tests/peer_scope184-helper.c',
+        ROOT / 'src/peer_scope184.c', ROOT / 'src/pure_sha256.c'])
+    scope_text = run([peer_scope], 'exact-peer-pure-config-tuples-identity')
+    if '473325 pure checks passed; no game/provider/network calls' not in scope_text:
+        raise RuntimeError('Pure peer fixture coverage differs')
+    peer_transport = compile_helper('peer_transport184-helper', [ROOT / 'tests/peer_transport184-helper.c',
+        ROOT / 'src/peer_scope184.c', ROOT / 'src/pure_sha256.c'], extra=['-lws2_32'])
+    transport_text = run([peer_transport], 'exact-peer-mock-file-interface-bind')
+    if '983 mock checks passed; no real files/interfaces/sockets/game/provider calls' not in transport_text:
+        raise RuntimeError('Mock peer adapter fixture coverage differs')
+    runtime = compile_helper('runtime184-helper', [ROOT / 'tests/runtime184-helper.c'])
+    run([runtime], 'runtime-flags-and-error-wrapper', 36)
+    cow = compile_helper('runtime184-cow-helper', [ROOT / 'tests/runtime184-cow-helper.c'],
+                         extra=['-Wl,--image-base,0x10000000'])
+    run([cow], 'runtime-exact-table-cow-contract', 35)
+    image_cow = compile_helper('runtime184-image-cow-helper', [ROOT / 'tests/runtime184-image-cow-helper.c'])
+    run([image_cow], 'runtime-own-page-transaction', 14)
+    run([image_cow, '--own-image'], 'runtime-own-image-cow-reproduction', 6)
 
     source = (ROOT / 'src/bootstrap.c').read_text(encoding='utf-8')
     marker = 'static int proxy_init(void)'
@@ -92,7 +128,7 @@ def main():
 
     dynamic = compile_helper('control-negative-helper', [ROOT / 'tests/control-negative-helper.c'], True)
     static = compile_helper('startup-negative-helper', [ROOT / 'tests/startup-negative-helper.c'], True, ['-lwinmm'])
-    for component in ('storage', 'cache', 'scripts'):
+    for component in ('storage', 'cache', 'scripts','two-player'):
         for kind in ('dynamic', 'static', 'missing-control'):
             label = f'{component}-{kind}'
             folder = out / label

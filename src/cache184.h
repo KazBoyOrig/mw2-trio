@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <stdint.h>
 
-/* Dormant cache-only experiment, enabled explicitly by the startup integration.
+/* Cache-only experiment, enabled explicitly by the startup integration.
    Three cache records do not authorize slot2, connections, UID/roster/wire/UI.
    Parent must call observe on every owner-thread frame and stop on fatal/errors.
    Never unload while installed/fatal; this module pins its code before writes. */

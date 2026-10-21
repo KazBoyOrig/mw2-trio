@@ -1,0 +1,161 @@
+{
+  "schema": "mw2-trio-public-native-input-evidence-v1",
+  "date_utc": "2026-10-21",
+  "version": "0.0.1-dev",
+  "dll_sha256": "509a28e0831816f6698408f24adb8a8f69dc4742d11e1825347be3cd70605ddf",
+  "exe_sha256": "4dd53fabf9677980aaf081009584ade99d6bf440330046e5c8950e87ef0547d9",
+  "topology": "two independent processes on one Windows PC; explicit fixed-loopback QA mode",
+  "map": "trainer",
+  "start": "pit",
+  "coop": 1,
+  "specialops": 0,
+  "game_mode": 2,
+  "duration_seconds_after_readiness": 100,
+  "pattern": "host-forward; client-right; simultaneously host-forward/client-left",
+  "result": true,
+  "both_normal_exit_codes": {
+    "client": 0,
+    "host": 0
+  },
+  "exe_files_unchanged": true,
+  "all_owned_processes_stopped": true,
+  "all_thirty_mailboxes_acknowledged": true,
+  "all_releases_consumed": true,
+  "scorer_source_sha256": "d7f7c82b61cca90d68fc96e4c0daa090284bc7f5acf3825d464cddbf5bb9e5ca",
+  "phases": [
+    {
+      "name": "neutral_before",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 40,
+          "motion_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0
+        },
+        "1": {
+          "exact_world_time_pairs": 40,
+          "motion_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0
+        }
+      }
+    },
+    {
+      "name": "host_forward",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 14,
+          "motion_units": 88.40700000000015,
+          "max_excursion_units": 108.92699999999968,
+          "max_world_position_error_units": 0.0
+        },
+        "1": {
+          "exact_world_time_pairs": 14,
+          "motion_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0
+        }
+      }
+    },
+    {
+      "name": "neutral_between1",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 21,
+          "motion_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0
+        },
+        "1": {
+          "exact_world_time_pairs": 19,
+          "motion_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0
+        }
+      }
+    },
+    {
+      "name": "client_right",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 17,
+          "motion_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0
+        },
+        "1": {
+          "exact_world_time_pairs": 17,
+          "motion_units": 88.23700000000008,
+          "max_excursion_units": 100.75800000000027,
+          "max_world_position_error_units": 0.0
+        }
+      }
+    },
+    {
+      "name": "neutral_between2",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 17,
+          "motion_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0
+        },
+        "1": {
+          "exact_world_time_pairs": 16,
+          "motion_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0
+        }
+      }
+    },
+    {
+      "name": "distinct_both",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 12,
+          "motion_units": 113.4152944359803,
+          "max_excursion_units": 120.82294752239761,
+          "max_world_position_error_units": 0.0
+        },
+        "1": {
+          "exact_world_time_pairs": 12,
+          "motion_units": 73.86299999999983,
+          "max_excursion_units": 81.6609999999996,
+          "max_world_position_error_units": 0.0
+        }
+      }
+    },
+    {
+      "name": "neutral_after",
+      "passed": true,
+      "slots": {
+        "0": {
+          "exact_world_time_pairs": 42,
+          "motion_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0
+        },
+        "1": {
+          "exact_world_time_pairs": 42,
+          "motion_units": 0.0,
+          "max_excursion_units": 0.0,
+          "max_world_position_error_units": 0.0
+        }
+      }
+    }
+  ],
+  "limits": [
+    "native movement and matching bounded position evidence only",
+    "no complete mouse/controller/shooting/interaction QA",
+    "no checkpoints, revive or mission transition proof",
+    "no separate-PC connectivity proof",
+    "three/four players remain unimplemented"
+  ],
+  "private_material_included": false
+}

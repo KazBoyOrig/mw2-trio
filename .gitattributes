@@ -9,3 +9,4 @@
 *.patch text eol=lf
 # Preserve exact pinned content bytes, including significant patch whitespace.
 content/** -text -whitespace
+third_party/*-LICENSE -text -whitespace
