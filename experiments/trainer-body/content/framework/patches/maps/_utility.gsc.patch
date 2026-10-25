@@ -1,0 +1,85 @@
+mw2coop patch for maps/_utility.gsc (Modern Warfare 2, 64-bit Steam build)
+
+1. A co-op session on a campaign map is the campaign, not Spec Ops.
+@@@ replace
+is_specialop()
+{
+	return GetDvar( "specialops" ) == "1";
+}
+@@@ with
+is_specialop()
+{
+	return GetDvar( "specialops" ) == "1" && !maps\_mw2coop::is_campaign_coop();
+}
+@@@ end
+
+2. Mission failure in co-op: both players restart from the last checkpoint.
+@@@ replace
+	if ( is_specialop() )
+	{
+		thread maps\_specialops_code::failure_summary_display();
+		return;
+	}
+
+	MissionFailed();
+@@@ with
+	if ( is_specialop() )
+	{
+		thread maps\_specialops_code::failure_summary_display();
+		return;
+	}
+
+	if ( maps\_mw2coop::is_campaign_coop() )
+	{
+		thread maps\_mw2coop::mission_failed();
+		return;
+	}
+
+	MissionFailed();
+@@@ end
+
+3. Mission end in co-op: both players move on together.
+@@@ replace
+nextmission()
+{
+	maps\_endmission::_nextmission();
+}
+@@@ with
+nextmission()
+{
+	if ( maps\_mw2coop::is_campaign_coop() )
+	{
+		maps\_mw2coop::mission_complete();
+		return;
+	}
+	maps\_endmission::_nextmission();
+}
+@@@ end
+
+4. Passenger rides (Wolverines! opening, and any level using these helpers): player 2 rides on
+   a free seat of the same vehicle and gets out with player 1.
+@@@ replace
+	level.player DisableWeapons();
+	level.player PlayerLinkTo( org, "tag_origin", 0.8, right, left, up, down );
+
+	return org;
+@@@ with
+	level.player DisableWeapons();
+	level.player PlayerLinkTo( org, "tag_origin", 0.8, right, left, up, down );
+
+	if ( maps\_mw2coop::is_campaign_coop() )
+		org.mw2coop_partner_seat = self maps\_mw2coop::seat_partner_in_vehicle( level.player2, right, left, up, down, "tag_passenger" );
+
+	return org;
+@@@ end
+@@@ replace
+player_leaves_humvee()
+{
+	self Unlink();
+@@@ with
+player_leaves_humvee()
+{
+	if ( isdefined( self.mw2coop_partner_seat ) )
+		self.mw2coop_partner_seat thread maps\_mw2coop::partner_leaves_seat( 0.7 );
+	self Unlink();
+@@@ end
