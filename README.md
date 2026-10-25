@@ -4,11 +4,15 @@
 
 Experimental work toward a three-player campaign in **Call of Duty: Modern Warfare 2 (2009)** on separate PCs, targeting one exact x86 build184 executable. Development currently prioritizes working two-player sessions before expanding the player count.
 
-**Three-player campaign co-op is not implemented yet.** Two independent game processes have joined a native UDP lobby, loaded campaign `trainer` at `pit`, and passed automated independent movement and matching-world checks. This was tested on **one PC**, through both loopback QA and an exact pair of endpoints on an existing nonloopback interface. Separate-PC play, shooting/interactions and campaign progression remain unverified. This is a developer prototype; a complete two-player campaign port is not claimed.
+**Three-player campaign co-op is not implemented yet.** Two independent game processes have joined a native UDP lobby, loaded campaign `trainer` at `pit`, and passed automated independent movement and matching-world checks. Automated tests used **one PC**, through both loopback QA and an exact pair of endpoints on an existing nonloopback interface. On October 24, 2026, the project owner also reported a successful trainer session on **two physical PCs over Radmin VPN**. This manual report does not establish automated cross-PC state agreement, shooting/interactions or campaign progression. A complete two-player campaign port is not claimed.
+
+**October 25 body preview:** genuine teammate bodies, heads and held weapons are now visible in a controlled idle scene on two isolated instances on one PC. The opt-in implementation is published separately under [experiments/trainer-body](experiments/trainer-body/README.md). Its latest movement run completed all seven phases, but strict scoring rejected one old neutral command at the start of client movement. A subsequent command-activation gate has passed offline tests and has not run in the game. This is an experimental trainer result; locomotion/firing animation, separate-PC body rendering and campaign progression remain unverified. See [scope, instructions and evidence](docs/BODY-PREVIEW.md).
 
 **Special thanks to [cranebeaker](https://github.com/cranebeaker), creator of [coop-anything](https://github.com/cranebeaker/coop-anything).** Their excellent guides provided the research, isolation, reverse-engineering and automated-testing approach behind this project. This prototype also builds on MIT-licensed work from [stxlvn/mw2_coop](https://github.com/stxlvn/mw2_coop). See [credits and provenance](CREDITS.md).
 
 ## What works today
+
+The table describes the baseline at the repository root. The [standalone body preview](experiments/trainer-body/README.md) has its own source, build, pinned launcher and validation boundaries; its native changes are not enabled by the baseline launcher.
 
 | Component | Verified scope |
 |---|---|
@@ -34,6 +38,8 @@ The latest campaign input test observed both processes for **100 seconds after r
 These runs retain the original two-player capacities. The fixed-loopback QA identity fixture and the separately guarded exact-peer identity flow are opt-in development paths. The latter has passed on one existing interface with two ports on **one machine**; this does not establish connectivity between friends' PCs. The three-record storage/cache experiments are separate and remain disabled for these two-player tests.
 
 The [two-player developer guide](docs/TWO-PLAYER.md) covers building, preparing independent game copies, explicit host/join configuration and recovery. The launcher defaults to a read-only plan and requires `--execute` for changes or game launch.
+
+For the experimental body candidate, use the [body-preview guide](docs/BODY-PREVIEW.md) and work from `experiments/trainer-body`. Do not mix the two framework directories or launchers. Eligible independently prepared game copies can be reused when their provenance/content checks pass.
 
 Allow about **12.7 GB per independent game copy**; a two-copy test on one PC needs about **25.5 GB**, plus tools and logs. The mod archive is under 1 MB. See the guide's [copy preparation and disk-space notes](docs/TWO-PLAYER.md#prepare-independent-copies) before creating more copies.
 
@@ -62,6 +68,8 @@ Get-FileHash -Algorithm SHA256 -LiteralPath 'D:\MW2-Test\iw4sp.exe'
 A build label alone is insufficient. Other hashes, the modern x64 release and the upstream mod's native DLL are incompatible with these addresses. Keep the fingerprint guards intact; another executable needs its own reverse-engineering work. Compatibility with other Windows versions is unverified.
 
 You supply a complete, already-working game installation. This repository includes no game executable, `steam_api.dll`, installer, fastfile, extracted full game script, save or other game asset.
+
+Missing or unreadable `steam_api.dll` stops the launcher's preparation preflight. See [dependency troubleshooting](docs/TROUBLESHOOTING.md); a file hash match is a consistency check, not an antivirus clearance.
 
 ## Build from source
 
@@ -110,7 +118,7 @@ Run the public Python launcher and read-only QA reader fixtures separately:
 python -B -m unittest discover -s tests -p 'test_*.py'
 ```
 
-The current Python suite passed **128 fixtures**. These use synthetic data and fake process handles. They do not launch a game or establish cross-PC compatibility.
+The current Python suite passed **140 fixtures**, including twelve dependency-preflight cases. These use synthetic data and fake process handles. They do not launch a game or establish cross-PC compatibility.
 
 ## Optional single-player component experiment
 

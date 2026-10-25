@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — 2026-10-25
+
+- Publish a self-contained, default-off trainer body experiment under `experiments/trainer-body`, preserving the root two-player baseline.
+- Add genuine Special Ops player resource loading, two-phase registration proofs, a bounded initial worker wait, stock body/head assignment and a pinned opt-in launcher.
+- Record passing paired resource registration, normal model assignment and controlled idle visibility on one PC. Preserve the latest candidate movement FAIL and distinguish it from earlier passing baseline movement tests.
+- Publish the optimized input controller and command-activation gate with synthetic tests. The later activation gate has not run in the game; it does not establish correct animation, separate-PC rendering, full-campaign or three/four-player support.
+- Update English guides, roadmap, sanitized evidence and retained upstream credits.
+- Check the required Steam API library before starting a full copy, with explicit missing-file and Windows security-block messages.
+- Verify its full prepared-copy hash before a session, including same-size replacements; reject a dependency changed during preparation.
+- Add twelve synthetic failure/regression cases and dependency-recovery documentation. These checks neither certify the library as safe nor change antivirus settings.
+
 ## 0.0.1-dev — 2026-10-21
 
 Development source snapshot, pre-alpha.
