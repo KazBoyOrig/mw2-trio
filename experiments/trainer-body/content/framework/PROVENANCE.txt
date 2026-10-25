@@ -1,0 +1,27 @@
+MW2 Trio 0.0.1-dev: framework content provenance
+
+Upstream: https://github.com/stxlvn/mw2_coop
+Commit: 8fcb6bcf9980894a631906059558a4797f4c9752
+License: MIT, retained verbatim as LICENSE in this directory.
+
+The scripts directory contains 14 upstream mod-authored GSC files plus the own
+_mw2trio_probe.gsc. The 26 patch files are copied from that pin, except _load.gsc.patch:
+its entire upstream content is preserved and one independent probe operation is
+appended. Upstream 342 patch blocks plus the own probe give 343 checked blocks.
+File hashes, original correspondence and that exception are recorded in manifest.json.
+
+Actual x86 runtime coverage: a single-player trainer session with coop0 requested
+four own GSC sources (_mw2coop, _mw2coop_qa, _mw2coop_roadkill, _mw2trio_probe)
+and five patched sources (_utility, _load, _coop, _intelligence, trainer), applying
+19 blocks with zero loader failures. The compiled probe executed and reported one
+actual player. The other mission modules were not requested by that test.
+
+The full text-patch comparison against the inspected reference matched all 26 scripts
+and 343 blocks. This does not establish runtime compatibility of every mission.
+The upstream framework remains TWO-player-oriented. Native networking, localization,
+progress/control integration, revive, vehicles and cinematic resources are separate
+requirements. This folder alone does not enable multiplayer or three-player co-op.
+
+No full extracted game source or game asset is included. Small game-owned excerpts
+in patch contexts belong to their respective owners and are outside the MIT license.
+See ../../CREDITS.md and ../../docs/TESTING.md for broader provenance and test scope.

@@ -1,5 +1,9 @@
 # Two-player developer launcher — 0.0.1-dev
 
+This page describes the baseline launcher at the repository root. The separate
+[body preview](BODY-PREVIEW.md) has its own source, framework and pinned launcher
+under `experiments/trainer-body`; follow that guide for the opt-in body candidate.
+
 This experimental launcher targets **campaign `trainer`, start `pit`, only** on the
 exact x86 build184 listed in [README](../README.md#exact-target). It is not a playable
 release, full campaign port or automatic mission progression system. Bounded
@@ -7,14 +11,20 @@ native movement QA passed through loopback and exact-peer transport, using two
 independent copies on one PC. A separate end-to-end run of this public launcher
 also passed: both roles became ready, loaded campaign trainer, advanced both
 slots' native clocks by over ten seconds and exited normally with clean file
-restoration. This does not establish separate-PC connectivity or campaign
-progression. Integration results and limits are recorded in [TESTING](TESTING.md).
+restoration. The owner later reported a successful trainer session on two PCs
+over Radmin VPN, with invisible teammate bodies. That manual result does not
+establish automated cross-PC gameplay agreement or campaign progression.
+Integration results and the body investigation are recorded in [TESTING](TESTING.md).
 
 The workflow follows **[cranebeaker/coop-anything](https://github.com/cranebeaker/coop-anything)**.
 The staged MIT campaign framework is credited to [stxlvn/mw2_coop](https://github.com/stxlvn/mw2_coop).
 The launcher ships project code only. Supply your own complete, working game and
 dependencies; it does not download, replace missing game dependencies, change
 security/firewall settings, configure a VPN, or access an account/provider API.
+
+If `steam_api.dll` is missing or blocked, preparation stops at the dependency
+preflight. See [dependency troubleshooting](TROUBLESHOOTING.md). Before launch,
+the dependency's full hash must also match the prepared-copy inventory.
 
 ## Build and check first
 
@@ -34,7 +44,7 @@ Run launcher-specific tests separately; they use synthetic files, telemetry and
 fake process handles, without a game or network traffic:
 
 ```powershell
-python -B -m unittest discover -s tests -p test_play_pair.py -v
+python -B -m unittest discover -s tests -p 'test_*.py'
 ```
 
 ## Prepare independent copies

@@ -98,6 +98,26 @@ def digest(path):
     return h.hexdigest()
 
 
+def steam_dependency(root, expected=None):
+    """Read the required dependency before copying or staging; never load it."""
+    try:
+        observed = digest(root / "steam_api.dll")
+    except FileNotFoundError as exc:
+        raise Refused("Required steam_api.dll is missing. Review protection history and repair the game "
+                      "from a trusted source; see docs/TROUBLESHOOTING.md.") from exc
+    except OSError as exc:
+        code = getattr(exc, "winerror", None)
+        if code in (225, 226):
+            raise Refused(f"Windows security blocked steam_api.dll (error {code}). Stop preparation or launch "
+                          "and review the detection; see docs/TROUBLESHOOTING.md.") from exc
+        raise Refused("Cannot read required steam_api.dll. Check access to the game files; "
+                      "this error alone does not establish an antivirus detection.") from exc
+    if expected is not None and (not re.fullmatch(r"[0-9a-f]{64}", expected) or observed != expected):
+        raise Refused("steam_api.dll differs from the prepared-copy inventory. Repair or prepare "
+                      "a trusted installation; no file was replaced.")
+    return observed
+
+
 def ipv4(text):
     if not re.fullmatch(r"(?:0|[1-9][0-9]{0,2})(?:\.(?:0|[1-9][0-9]{0,2})){3}", text):
         raise argparse.ArgumentTypeError("Use canonical numeric IPv4, without leading zeros")
@@ -178,7 +198,7 @@ def prepare(source, target, execute=False):
     regular(target.parent, directory=True)
     if digest(source / "iw4sp.exe") != EXE_SHA:
         raise Refused("Unsupported source executable")
-    regular(source / "steam_api.dll")
+    dependency_sha = steam_dependency(source)
     regular(source / "main", directory=True)
     regular(source / "zone", directory=True)
     files = [(rel, p) for rel, p in tree(source) if selected(rel)]
@@ -194,6 +214,8 @@ def prepare(source, target, execute=False):
         dest = target / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         inventory[rel.as_posix()] = copy_new(p, dest)
+    if inventory.get("steam_api.dll", {}).get("sha256") != dependency_sha:
+        raise Refused("steam_api.dll changed after preflight; partial copy is not eligible for launch")
     marker = {"schema": "mw2-trio-independent-copy-v1", "root": str(target),
               "source": str(source), "exe_sha256": EXE_SHA, "files": inventory}
     with (target / MARKER).open("x", encoding="utf-8") as stream:
@@ -210,6 +232,10 @@ def verify_copy(root):
     source = absolute(marker["source"])
     if source == root or source.is_relative_to(root) or root.is_relative_to(source):
         raise Refused("Copy provenance aliases the source")
+    dependency = marker["files"].get("steam_api.dll")
+    if not isinstance(dependency, dict) or not isinstance(dependency.get("sha256"), str):
+        raise Refused("Incomplete dependency inventory")
+    steam_dependency(root, dependency["sha256"])
     for name, item in marker["files"].items():
         p = root / relative(name)
         if not selected(relative(name)) or regular(p, single=True).st_size != item["bytes"]:

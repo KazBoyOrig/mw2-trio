@@ -1,0 +1,10 @@
+/build/
+/local/
+/system-export-manifest.json
+__pycache__/
+*.pyc
+*.log
+*.dll
+*.exe
+*.bin
+*.enable

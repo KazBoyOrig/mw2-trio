@@ -18,7 +18,7 @@ errors = []
 files = [p for p in tracked if p]
 for name in files:
     path = ROOT / name
-    if path.is_symlink() or path.suffix.lower() in forbidden or Path(name).parts[0] in {'build', 'local', 'work', 'toolchains'}:
+    if path.is_symlink() or path.suffix.lower() in forbidden or any(part in {'build', 'local', 'work', 'toolchains'} for part in Path(name).parts):
         errors.append(f'{name}: forbidden runtime/private file')
         continue
     data = subprocess.run(['git', '-C', str(ROOT), 'show', ':' + name],
@@ -35,13 +35,20 @@ for name in files:
             errors.append(f'{name}: {label}')
 if errors:
     raise SystemExit('\n'.join(errors))
-manifest = json.loads((ROOT / 'content/framework/manifest.json').read_text(encoding='utf-8'))
-for row in manifest['files']:
-    name = 'content/framework/' + row['file']
-    data = subprocess.run(['git', '-C', str(ROOT), 'show', ':' + name],
-                          check=True, capture_output=True).stdout
-    if len(data) != row['bytes'] or hashlib.sha256(data).hexdigest() != row['sha256']:
-        raise SystemExit('Indexed pinned content differs from manifest: ' + name)
+manifests = [name for name in files if name.endswith('content/framework/manifest.json')]
+verified = 0
+for manifest_name in manifests:
+    manifest_bytes = subprocess.run(['git', '-C', str(ROOT), 'show', ':' + manifest_name],
+                                    check=True, capture_output=True).stdout
+    manifest = json.loads(manifest_bytes)
+    prefix = manifest_name.removesuffix('manifest.json')
+    for row in manifest['files']:
+        name = prefix + row['file']
+        data = subprocess.run(['git', '-C', str(ROOT), 'show', ':' + name],
+                              check=True, capture_output=True).stdout
+        if len(data) != row['bytes'] or hashlib.sha256(data).hexdigest() != row['sha256']:
+            raise SystemExit('Indexed pinned content differs from manifest: ' + name)
+        verified += 1
 print(f'PASS publication scan: {len(files)} indexed UTF-8 source/documentation files; no matched private/runtime patterns')
-print(f'PASS content manifest: {len(manifest["files"])} indexed file hashes and sizes match')
+print(f'PASS content manifests: {verified} file hashes and sizes match across {len(manifests)} trees')
 print('This pattern scan supplements manual provenance/license review; it is not a complete secret detector.')
