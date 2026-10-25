@@ -1,0 +1,4 @@
+* text=auto eol=lf
+# These bytes are hashed by the frozen body launcher and upstream manifest.
+content/** -text -whitespace
+third_party/*-LICENSE -text -whitespace
