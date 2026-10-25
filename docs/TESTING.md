@@ -19,7 +19,7 @@ Use an isolated test copy for any later game run. Record the executable's build 
 
 These tests exercised project helpers or synthetic fixtures, without a multiplayer session.
 
-The current native standalone runner passed **72 helper/build cases**. The original publication-stage receipt had 48 cases; 68 is a later historical total. The native suite includes pure exact-peer policy/transport fixtures and guarded identity tests. A separate public Python suite passed **128 fixtures**: 30 launcher, 66 shared-map and 32 input-reader cases. The scorer modules have **66 shared-map and 32 input fixtures**, including negative teardown/crash, stale state, missing evidence and excessive neutral excursion. The private dispatcher adds 11 fixtures; those 109 private machinery fixtures are a different total from the public native suite and do not establish a real-game result. Per-component counts below use their own assertion units and must not be added to these totals.
+The current native standalone runner passed **72 helper/build cases**. The original publication-stage receipt had 48 cases; 68 is a later historical total. The native suite includes pure exact-peer policy/transport fixtures and guarded identity tests. A separate public Python suite passed **140 fixtures**: 30 launcher, 12 dependency-preflight, 66 shared-map and 32 input-reader cases. The scorer modules have **66 shared-map and 32 input fixtures**, including negative teardown/crash, stale state, missing evidence and excessive neutral excursion. The private dispatcher adds 11 fixtures; those 109 private machinery fixtures are a different total from the public native suite and do not establish a real-game result. Per-component counts below use their own assertion units and must not be added to these totals.
 
 ```powershell
 python -B -m unittest discover -s tests -p 'test_*.py'
@@ -102,9 +102,25 @@ An earlier launcher run failed because settings were applied before the asynchro
 
 This test covers lifecycle, shared loading and native advancement through the actual public CLI. It contains no movement plan and does not extend the separate movement evidence. All processes were on one PC; manual READY confirmation still does not implement cross-peer compatibility or settings negotiation.
 
+## Third-person bodies — October 24, 2026
+
+This section records the earlier NPC-rig investigation. The October 25 genuine-player-rig result is documented in [the body-preview report](BODY-PREVIEW.md) and [sanitized evidence](evidence/trainer-body-preview-2026-10-25.json). Resource registration, normal model assignment and controlled idle visibility now pass in two same-PC instances. Movement/firing animation and separate-PC body rendering remain unverified; the latest body-candidate movement score remains FAIL. Historical failures below have not been relabelled.
+
+The project owner reported joining and loading campaign trainer on two physical PCs through Radmin VPN. Both saw the teammate's label but no third-person body; their own first-person hands and weapons were visible. This is manual feedback, corroborated by one host's native two-member/trainer telemetry and clean exit. It is not a paired automated cross-PC gameplay trace.
+
+Bounded automated single-instance and two-instance diagnostics subsequently read an empty native player model after the ordinary loadout completed. The pinned upstream framework explicitly documents absent campaign bodies and only mirrors first-person viewmodels. This explains why visible hands and names did not establish teammate body support.
+
+Private trainer experiments have verified four genuine, non-default stock body/head assets in both processes, then called the stock player-model updater and multiplayer animation entry on the actual player entities. Read-only native checks observe matching body/head/world-weapon components and arm/leg bones in the other player's CG DObj, with the local player excluded from the remote rendering branch. A later full-body capture exposed a deformed upper-body/weapon pose, so this candidate remains **FAIL and is not shipped**. Ordinary NPC bodies and the stock Special Ops player body have different skeletal hierarchies; compatibility with player animations needs further work. Visible geometry and changing bone matrices alone did not establish a correct player body.
+
+An earlier controlled visual-layout test remains FAIL because its floor checks refused a sloped footprint. Moving the proposed test point onto a flat area passed the same unchanged checks, allowing the deformation to be seen clearly. A level-scoped guard also prevented duplicate initialization from creating a second model updater. These diagnostic improvements do not change the failed body-quality verdict.
+
+A separate stock Special Ops control loaded the genuine 90-bone co-op body and 24-bone head, with evaluated remote poses in both processes and normal exits. The next candidate uses those player assets instead of the incompatible NPC rig. Static analysis identified a narrow way to use the existing map loader's SO-resource stage while preserving the original campaign map, script selection and ordinary-map addon handling. This route has **not run**. Prepared read-only observers passed 18 synthetic tests, and all 17 original native range hashes matched the exact target executable; neither result proves that the new resource path or body renders correctly.
+
+These experiments reuse existing isolated copies, restore their temporary own GSC and manifest after both processes stop, and leave the original executable unchanged. They are not additional campaign, revive, checkpoint or three-player evidence.
+
 ## Next two-player gates
 
-Run automated tests on two separate PCs with mirrored exact-peer endpoints and matching build/content, then cover native aim/fire/use, death/revive, checkpoint restart, disconnect/rejoin, mission triggers and transitions. The launcher currently has manual readiness confirmation; cross-peer version/seed/settings agreement is not implemented. A complete campaign claim requires recorded mission coverage and resolved progression failures.
+Fix and verify third-person teammate bodies first. Run automated tests on two separate PCs with mirrored exact-peer endpoints and matching build/content, then cover native aim/fire/use, death/revive, checkpoint restart, disconnect/rejoin, mission triggers and transitions. The launcher currently has manual readiness confirmation; cross-peer version/seed/settings agreement is not implemented. A complete campaign claim requires recorded mission coverage and resolved progression failures.
 
 ## Gates required before claiming three-player co-op
 
