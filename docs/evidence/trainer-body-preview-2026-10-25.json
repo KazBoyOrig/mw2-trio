@@ -1,0 +1,86 @@
+{
+  "schema": "mw2-trio-sanitized-body-preview/v1",
+  "date": "2026-10-25",
+  "target": {
+    "game": "Modern Warfare 2 (2009)",
+    "architecture": "x86 PE32",
+    "build": 184,
+    "language": "Russian",
+    "exe_sha256": "4dd53fabf9677980aaf081009584ade99d6bf440330046e5c8950e87ef0547d9",
+    "map": "trainer",
+    "start": "pit",
+    "players": 2,
+    "physical_pcs": 1
+  },
+  "frozen_candidate": {
+    "dll_sha256": "be51d30339edd669e67525ec0f0fada4f481d09ae56f8af509248fb181c37f7b",
+    "probe_sha256": "7fab32a1a26b16d083036766949a249c0bfdb1dc24a62fe0795e1b0c4aee9722",
+    "framework_manifest_sha256": "91e8007280e7c6cfb4d0abd758fa6aaf477b800779f3555e1ed11c48a7e3fe6e",
+    "native_helper_build_cases": 80,
+    "native_helper_result": "PASS",
+    "experiment_enabled_by_default": false
+  },
+  "resource_registration": {
+    "result": "PASS",
+    "both_instances": true,
+    "resident_and_registered_proofs": true,
+    "initial_worker_wait_ms": 2813,
+    "second_instance_worker_already_ready": true
+  },
+  "normal_assignment": {
+    "result": "PASS",
+    "qa_placement": false,
+    "body_bones": 90,
+    "head_bones": 24,
+    "world_weapon_bones": 17,
+    "total_bones": 131,
+    "owner_and_binding_mismatches": 0
+  },
+  "controlled_idle_visual": {
+    "result": "PASS_FOR_RECORDED_IDLE_FRAMES",
+    "both_observers": true,
+    "one_time_qa_placement": true,
+    "body_head_weapon_visible": true,
+    "some_details_occluded": true,
+    "locomotion_or_firing_proven": false
+  },
+  "latest_native_movement": {
+    "result": "FAIL",
+    "completed_phases": 7,
+    "strict_phase_passes": 6,
+    "failed_phase": "client_right",
+    "reason": "One old neutral server/applied command at the inclusive first 200ms interior boundary",
+    "shared_map_pass": true,
+    "harness_clean": true,
+    "max_compared_world_position_error": 0,
+    "max_phase_wall_ms": 2906,
+    "all_releases_acknowledged": true,
+    "exit_codes": [0, 0],
+    "forced_cleanup": false,
+    "managed_files_restored": true,
+    "executable_hashes_unchanged": true
+  },
+  "subsequent_controller": {
+    "offline_tests": 121,
+    "offline_result": "PASS",
+    "game_execution": "UNTESTED",
+    "activation": "Both copies and both slots must show expected server/applied axes before measurement",
+    "original_three_second_deadline_preserved": true,
+    "measurement_durations_and_score_thresholds_unchanged": true,
+    "prior_failures_preserved": true
+  },
+  "unverified": ["rendered locomotion", "firing", "repeated loading and restart", "separate-PC body preview", "revive", "checkpoints", "mission transitions", "complete campaign"],
+  "three_or_four_player_support": "NOT_IMPLEMENTED",
+  "private_raw_receipts_and_game_material_included": false,
+  "publication_checks": {
+    "native_helper_build_cases": 80,
+    "native_result": "PASS",
+    "exact_tested_dll_reproduced": true,
+    "source_date_epoch": 1792922961,
+    "experimental_python_tests": 172,
+    "baseline_python_tests": 140,
+    "python_result": "PASS",
+    "additional_game_launches": false,
+    "suite_counts_are_not_distinct_gameplay_tests": true
+  }
+}
